@@ -3,6 +3,7 @@ made by Leo Kastenberg and Will Hagele
 '''
 import turtle
 import time
+from generationalLearn import *
 
 class Graphics:
 
@@ -765,23 +766,20 @@ class Game:
         self.graphics.turtleSetup()
         self.pieceValues = [tuningValues[i] for i in range(6)]
         self.movementCoefficients = [tuningValues[i] for i in range(6,12)]
+        self.playGame = [self.zeroPlayer, self.singlePlayer, self.twoPlayer]
 
         self.graphics.turtleUpdate(self.board.grid)
 
         if testing:
             self.playOther()
         else:
-            if input("how many players?")==1:
-                self.gameType = 1
-                self.playSinglePlayer()
-            else:
-                self.gameType = 2
-                self.playGame()
+           self.playGame[input("How many players? ")]()
+            
 
     def playOther(self):
         pass
 
-    def playGame(self):
+    def twoPlayer(self):
         whoseTurn = "w"
         while (not self.board.isCheckmate(whoseTurn)):
             self.graphics.turtleUpdate(self.board.grid)
@@ -799,7 +797,7 @@ class Game:
         self.board.printGrid()
         print "checkmate"
 
-    def playSinglePlayer(self):
+    def singlePlayer(self):
         playerColor = raw_input("\nwhat color do you want to play as?\n>>>")
         compColor = ("b" if playerColor == "w" else "w")
 
@@ -813,6 +811,46 @@ class Game:
                 self.board.takePlayerMove(whoseTurn)
             else:
                 self.board.movePiece(self.bestMove(compColor))
+
+    def zeroPlayer(self):
+        genSize = 4
+        randomness = 10
+        aValues = [400]
+        aValues.extend([1000 for i in range(6)])
+        aValues.append(100)
+        aValues.extend([50 for i in range(5)])
+        chessPlayerA = Species(lambda x:x**2,aValues,genSize,randomness)
+        bValues = aValues[:]
+        chessPlayerB = Species(lambda x:x**2,bValues,genSize,randomness)
+        generations = 10 #change this value for optimizing stuff
+        thisGame = Competition(chessPlayerA,chessPlayerB,Game)
+        for generation in range(generations):
+            print "\n\n==========WE ARE ENTERING GENERATION %d==========\n\n" %(generation)
+
+            scoresA = [0 for i in range(genSize)]
+            scoresB = [0 for i in range(genSize)]
+            for a in range(genSize):
+                for b in range(genSize):
+                    playerA = Game(chessPlayerA.currentGeneration[a],True)
+                    playerB = Game(chessPlayerB.currentGeneration[b],True)
+                    winner = thisGame.compete(playerA,playerB)#returns a 0 if A wins and a 1 if B wins -- now it can return a 2 if it is a stalemate
+                    if winner < 2:
+                        if winner:
+                            scoresB[b] += 1
+                            scoresA[a] -= 1
+                        else:
+                            scoresA[a] += 1
+                            scoresB[b] += 1
+            aBest = chessPlayerA.currentGeneration[scoresA.index(max(scoresA))]
+            bBest = chessPlayerB.currentGeneration[scoresB.index(max(scoresB))]
+
+            chessPlayerA.breedGen(aBest)
+            chessPlayerB.breedGen(bBest)
+            with open("learningResults.txt","w") as f: 
+                f.truncate()
+                f.write(str(chessPlayerA)+"\n"+str(chessPlayerB))
+        print "\nthe values for player A are:",chessPlayerA.currentGeneration
+        print "\nthe values for player B are:",chessPlayerB.currentGeneration
 
     def evaluateMove(self,move,movesLeft,isComp):
 
