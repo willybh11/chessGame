@@ -178,6 +178,12 @@ class Board:
 
         self.gridCache = []
 
+        self.islegalmoves = {   "P": self.isLegalPawnMove   ,
+                                "N": self.isLegalKnightMove ,
+                                "B": self.isLegalBishopMove ,
+                                "R": self.isLegalRookMove   ,
+                                "K": self.isLegalKingMove   , }
+
     def makeGrid(self):
 
         grid = [["" for i in range(8)] for i in range(8)] #makes an 8 by 8 grid
@@ -270,6 +276,19 @@ class Board:
     def pawnThreatening(self,row,column):
         color = self.grid[row][column][1]
         returnList = []
+        for numset in [ [1,-1], [1,1] ] if color == "w" else [ [-1,-1], [-1,1] ]:
+            try:
+                if self.grid[row+numset[0]][column+numset[1]] == "return indexerror":
+                    pass
+                returnList.append([row+numset[0],column+numset[1]])
+            except IndexError:
+                pass
+
+        return returnList
+
+    def oldpawnThreatening(self,row,column):
+        color = self.grid[row][column][1]
+        returnList = []
         if color == "w":
             try:
                 if self.grid[row+1][column-1] == "just get IndexError":
@@ -300,7 +319,7 @@ class Board:
             except IndexError:
                 pass
 
-        return returnList
+        return returnList #outdated
 
     def possiblePieceMoves2(self,row,column):#all of the possible moves that a given piece can make
         pieceType = self.grid[row][column][0]
@@ -401,12 +420,13 @@ class Board:
             else:
                 pass#break
 
-            for i in range(col+1,8):#right
-                move = [piece[1],piece[0],row,col,row,i]
-                if self.isLegalMove(move,safeMode):
-                    returnList.append(move[:])
-                else:
-                    pass#break
+        for i in range(col+1,8):#right
+            move = [piece[1],piece[0],row,col,row,i]
+            if self.isLegalMove(move,safeMode):
+                returnList.append(move[:])
+            else:
+                pass#break
+
         for i in range(1,col+1):#left
             move = [piece[1],piece[0],row,col,row,i]
             if self.isLegalMove(move,safeMode):
@@ -417,33 +437,12 @@ class Board:
         return returnList
 
     def possibleKnightMoves(self,color,row,col,safeMode):
-
         returnList = []
         piece = self.grid[row][col]
 
-        move = [piece[1],piece[0],row,col,row+1,col+2]
-        if self.isLegalMove(move,safeMode): returnList.append(move[:])
-
-        move = [piece[1],piece[0],row,col,row-1,col+2]
-        if self.isLegalMove(move,safeMode): returnList.append(move[:])
-
-        move = [piece[1],piece[0],row,col,row+1,col-2]
-        if self.isLegalMove(move,safeMode): returnList.append(move[:])
-
-        move = [piece[1],piece[0],row,col,row-1,col-2]
-        if self.isLegalMove(move,safeMode): returnList.append(move[:])
-
-        move = [piece[1],piece[0],row,col,row+2,col+1]
-        if self.isLegalMove(move,safeMode): returnList.append(move[:])
-
-        move = [piece[1],piece[0],row,col,row+2,col-1]
-        if self.isLegalMove(move,safeMode): returnList.append(move[:])
-
-        move = [piece[1],piece[0],row,col,row-2,col+1]
-        if self.isLegalMove(move,safeMode): returnList.append(move[:])
-
-        move = [piece[1],piece[0],row,col,row-2,col-1]
-        if self.isLegalMove(move,safeMode): returnList.append(move[:])
+        for numlist in [ [1,2], [-1,2], [1,-2], [-1,-2], [2,1], [2,-1], [-2,1], [-2,-1] ]:
+            move = [piece[1],piece[0],row,col,row+numlist[0],col+numlist[1]]
+            if self.isLegalMove(move,safeMode): returnList.append(move[:])
 
         return returnList
 
@@ -490,23 +489,10 @@ class Board:
 
         if move[2]==move[4] and move[3]==move[5]: return False
 
-        if pieceType == "P":
-            return self.isLegalPawnMove(move)
-
-        if pieceType == "N":
-            return self.isLegalKnightMove(move)
-
-        if pieceType == "R":
-            return self.isLegalRookMove(move)
-
-        if pieceType == "K":
-            return self.isLegalKingMove(move)
-
-        if pieceType == "B":
-            return self.isLegalBishopMove(move)
-
         if pieceType == "Q":
             return (self.isLegalBishopMove(move) or self.isLegalRookMove(move))
+
+        return self.islegalmoves[pieceType](move)
 
     def isLegalKingMove(self,move): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
         if move[4]>7 or move[5]>7 or move[4]<0 or move[5]<0: return False
