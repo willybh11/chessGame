@@ -700,24 +700,29 @@ class Board:
         while invalidMove: #because python doesn't have any heckin' do while loops
             print "it is "+colorsTurn+"'s turn\n"
 
-            inputMove = raw_input("input move in the format:\nPieceAbbreviation (Knights are 'N') column row columnTo rowTo\n\n>>>").split() #currently in the format ['piece',row,column,rowTo,columnTo]
+            inputMove = raw_input("input move in the format:\n'column' row 'columnTo' rowTo\ne.g. A 2 A 4\n>>>").split() #currently in the format [row,column,rowTo,columnTo]
 
             try:
-                rawMove = [ inputMove[0] ,
-                            int(inputMove[2]) - 1 ,
-                            self.letterConvert[inputMove[1].upper()] ,
-                            int(inputMove[4]) - 1 ,
-                            self.letterConvert[inputMove[3].upper()] ]
+                row = int(inputMove[1]) - 1
+                col = self.letterConvert[inputMove[0].upper()]
+                rowto = int(inputMove[3]) - 1
+                colto = self.letterConvert[inputMove[2].upper()]
+                piece = self.grid[row][col][0]
+
+                rawMove = [ piece, row, col, rowto, colto ]
 
             except: # not enough inputs or castle
 
-                if rawMove[0].lower() == "castle":#castles are in the format ["castle",withRookRow,withRookCol]
-                    rawMove[1],rawMove[2] = int(rawMove[1]),int(rawMove[2])
+                if inputMove[0].lower() == "castle":#castles are in the format ["castle",withRookRow,withRookCol]
+                    rawMove = ["castle", int(inputMove[2]) - 1, self.letterConvert[inputMove[1].upper()]]
+                    #rawMove[1],rawMove[2] = int(rawMove[1]),int(rawMove[2])
                     if self.isLegalCastle(colorsTurn,rawMove):
                         self.castleMove(rawMove)
                         invalidMove = False
                     else:
-                        print "that move was not a legal move, please check how you formated it"
+                        print "that move was not a legal move, please check how you formated it (invalid castle)"
+                else:
+                    print "invalid num of inputs"
 
             move = [colorsTurn]
             move.extend(rawMove)
@@ -725,7 +730,7 @@ class Board:
                 self.movePiece(move)
                 invalidMove = False
             else:
-                print "that move was not a legal move, please check how you formated it"
+                print "that move was not a legal move, please check how you formated it (after castlecheck)"
 
     def printGrid(self):
 
@@ -771,11 +776,11 @@ class Game:
             self.graphics.turtleUpdate(self.board.grid)
             self.board.printGrid()
             while 1:
-                try:
+                if 1:#try:
                     self.board.takePlayerMove(whoseTurn)
                     break
-                except:
-                    print "format error: try again\n"
+               # except:
+                    #print "format error: try again\n"
 
             whoseTurn = ("w" if whoseTurn == "b" else "b")
 
