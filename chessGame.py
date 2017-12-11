@@ -255,15 +255,17 @@ class Board:
                             foundMoves.extend(pieceMoves)
 
         return foundMoves
-
+                                                                            #     0       1    2     3     4      5
     def isLegalMove(self,move,safeMove): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
-        if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:
+        if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:
+            print "invalid coords"
             return False
         pieceType = move[1]
         if safeMove:
             self.movePiece(move)
             if self.isCheck(move[0]):
                 self.undoMove()
+                print "youre in check"
                 return False
             self.undoMove()
 
@@ -500,12 +502,13 @@ class Board:
           
             try:
                 rawMove = [ inputMove[0] ,
-                            self.letterConvert[inputMove[1].upper()] ,
                             int(inputMove[2]) - 1 ,
-                            self.letterConvert[inputMove[3].upper()] ,
-                            int(inputMove[4]) - 1 
-                            ]
-            except: # invalid or castle
+                            self.letterConvert[inputMove[1].upper()] ,
+                            int(inputMove[4]) - 1 ,
+                            self.letterConvert[inputMove[3].upper()] ]
+
+                print "formatted move:",rawMove
+            except: # not enough inputs or castle
 
                 print "excepted"
 
@@ -521,6 +524,8 @@ class Board:
             # for i in range(1,5):
             #     rawMove[i] = int(rawMove[i])
             move.extend(rawMove)
+            print move
+            print "extended"
             if self.isLegalMove(move,True):
                 print "move is legal"
                 self.movePiece(move)
