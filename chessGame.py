@@ -492,36 +492,41 @@ class Board:
         self.grid[move[1]][move[2]] = ""
 
     def takePlayerMove(self,colorsTurn):
-        while 1: #because python doesn't have any heckin' do while loops
+        invalidMove = True
+        while invalidMove: #because python doesn't have any heckin' do while loops
             print "it is "+colorsTurn+"'s turn\n"
 
-            rawMove = raw_input("input move in the format:\nPieceAbbreviation (Knights are 'N') row column rowTo columnTo\n\n>>>").split() #currently in the format ['piece',row,column,rowTo,columnTo]
-            rawMove[1] = int(rawMove[1]) - 1
-            rawMove[2] = self.letterConvert[rawMove[2]]
-            rawMove[3] = int(rawMove[3]) - 1
-            rawMove[4] = self.letterConvert[rawMove[4]]
+            inputMove = raw_input("input move in the format:\nPieceAbbreviation (Knights are 'N') column row columnTo rowTo\n\n>>>").split() #currently in the format ['piece',row,column,rowTo,columnTo]
+          
+            try:
+                rawMove = [ inputMove[0] ,
+                            self.letterConvert[inputMove[1].upper()] ,
+                            int(inputMove[2]) - 1 ,
+                            self.letterConvert[inputMove[3].upper()] ,
+                            int(inputMove[4]) - 1 
+                            ]
+            except: # invalid or castle
 
+                print "excepted"
 
-            if rawMove[0].lower() == "castle":#castles are in the format ["castle",withRookRow,withRookCol]
-                rawMove[1],rawMove[2] = int(rawMove[1]),int(rawMove[2])
-                if self.isLegalCastle(colorsTurn,rawMove):
-                    self.castleMove(rawMove)
-                    break
-                else:
-                    print "that move was not a legal move, please check how you formated it"
+                if rawMove[0].lower() == "castle":#castles are in the format ["castle",withRookRow,withRookCol]
+                    rawMove[1],rawMove[2] = int(rawMove[1]),int(rawMove[2])
+                    if self.isLegalCastle(colorsTurn,rawMove):
+                        self.castleMove(rawMove)
+                        invalidMove = False
+                    else:
+                        print "that move was not a legal move, please check how you formated it"
 
-
+            move = [colorsTurn]
+            # for i in range(1,5):
+            #     rawMove[i] = int(rawMove[i])
+            move.extend(rawMove)
+            if self.isLegalMove(move,True):
+                print "move is legal"
+                self.movePiece(move)
+                invalidMove = False
             else:
-
-                move = [colorsTurn]
-                for i in range(1,5):
-                    rawMove[i] = int(rawMove[i])
-                move.extend(rawMove)
-                if self.isLegalMove(move,True):
-                    self.movePiece(move)
-                    break
-                else:
-                    print "that move was not a legal move, please check how you formated it"
+                print "that move was not a legal move, please check how you formated it"
 
     def printGrid(self):
 
