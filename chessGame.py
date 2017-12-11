@@ -1,7 +1,5 @@
 #NOTE ALL KNIGHTS ARE REFERRED TO WITH THE LETTER N BECAUSE KING STARTS WITH K
-
-#TODO: add only being able to castle when not in check;
-from graphicsImport import Graphics
+import turtle 
 
 class Board:
 
@@ -85,7 +83,6 @@ class Board:
             self.movePiece(move)
             if not self.isCheck(whoseTurn):     #if the move has fixed the situation
                 self.undoMove()
-                print "one possible move is",move
                 print "\nCHECK\n"
                 return False
             self.undoMove()
@@ -256,9 +253,9 @@ class Board:
 
         return foundMoves
                                                                             #     0       1    2     3     4      5
+
     def isLegalMove(self,move,safeMove): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
         if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:
-            print "invalid coords"
             return False
         pieceType = move[1]
         if safeMove:
@@ -493,7 +490,7 @@ class Board:
         self.grid[move[1]][rookCoords[0]] = "R"+color
         self.grid[move[1]][move[2]] = ""
 
-    def takePlayerMove(self,colorsTurn):
+    def takePlayerMove(self,colorsTurn):    # i changed this
         invalidMove = True
         while invalidMove: #because python doesn't have any heckin' do while loops
             print "it is "+colorsTurn+"'s turn\n"
@@ -507,10 +504,7 @@ class Board:
                             int(inputMove[4]) - 1 ,
                             self.letterConvert[inputMove[3].upper()] ]
 
-                print "formatted move:",rawMove
             except: # not enough inputs or castle
-
-                print "excepted"
 
                 if rawMove[0].lower() == "castle":#castles are in the format ["castle",withRookRow,withRookCol]
                     rawMove[1],rawMove[2] = int(rawMove[1]),int(rawMove[2])
@@ -521,13 +515,8 @@ class Board:
                         print "that move was not a legal move, please check how you formated it"
 
             move = [colorsTurn]
-            # for i in range(1,5):
-            #     rawMove[i] = int(rawMove[i])
             move.extend(rawMove)
-            print move
-            print "extended"
             if self.isLegalMove(move,True):
-                print "move is legal"
                 self.movePiece(move)
                 invalidMove = False
             else:
@@ -593,9 +582,11 @@ class Game():
         while (not self.board.isCheckmate(whoseTurn)):
             whoseTurn = ("b" if whoseTurn == "w" else "w")
             if whoseTurn == playerColor:
-                self.graphics.turtleUpdate(self.board.grid)
                 self.board.printGrid()
+                self.graphics.turtleUpdate(self.board.grid)
                 self.board.takePlayerMove(whoseTurn)
+                self.graphics.turtleUpdate(self.board.grid)
+
             else:
                 self.board.movePiece(self.bestMove(compColor))
 
@@ -677,6 +668,156 @@ class Game():
                 best = [curEval,move]
         return best[1]
 
+
+class Graphics():
+
+    class Draw():
+
+        def __init__(self, T):
+            self.T = T
+ 
+        def box(self):
+            self.coords = self.T.pos()
+            self.T.goto(self.coords[0] - 30, self.coords[1] - 24)
+            self.T.seth(0)
+            self.T.pd()
+            self.T.begin_fill()
+            for i in range(2):
+                self.T.fd(60)
+                self.T.rt(90)
+                self.T.fd(11)
+                self.T.rt(90)
+            self.T.end_fill()
+            self.T.pu()
+
+        def king(self):
+            self.box()
+            self.T.goto(self.coords[0] + 13, self.coords[1] + 9)
+            self.T.seth(90)
+            self.T.pd()
+            self.T.begin_fill()
+            self.T.circle(13)
+            self.T.goto(self.coords[0] - 2, self.coords[1] + 21)
+            self.T.seth(360)
+            for i in range(4):
+                self.T.fd(4)
+                self.T.lt(90)
+                self.T.fd(7)
+                self.T.rt(90)
+                self.T.fd(7)
+                self.T.lt(90)
+            self.T.end_fill()
+
+        def queen(self):
+            self.box()
+            self.T.goto(self.coords[0] + 13, self.coords[1] + 9)
+            self.T.seth(90)
+            self.T.pd()
+            self.T.begin_fill()
+            self.T.circle(13)
+            self.T.end_fill()
+            self.T.seth(360)
+            for coords in [(self.coords[0] - 20, self.coords[1] + 24),
+                           (self.coords[0] - 8, self.coords[1] + 29),
+                           (self.coords[0] + 8, self.coords[1] + 29),
+                           (self.coords[0] + 20, self.coords[1] + 24)]:
+                self.T.pu()
+                self.T.goto(coords)
+                self.T.begin_fill()
+                self.T.pd()
+                self.T.circle(5)
+                self.T.end_fill()
+
+        def bishop(self):
+            self.box()
+            self.T.goto(self.coords[0], self.coords[1] + 35)
+            self.T.pd()
+            self.T.begin_fill()
+            for heading in [250, 290, 70, 110]:
+                self.T.seth(heading)
+                self.T.fd(25)
+            self.T.end_fill()
+
+        def knight(self):
+            self.box()
+            self.T.goto(self.coords[0] + 2, self.coords[1] + 5)
+            self.T.begin_fill()
+            self.T.pd()
+            self.T.circle(15, 180)
+            self.T.end_fill()
+            self.T.pu()
+            self.T.goto(self.coords[0] - 2, self.coords[1] + 25)
+            self.T.seth(180)
+            self.T.begin_fill()
+            self.T.circle(20, 180)
+            self.T.end_fill()
+
+        def pawn(self):
+            self.box()
+            self.T.seth(90)
+            self.T.goto(self.coords[0] + 15, self.coords[1] + 20)
+            self.T.begin_fill()
+            self.T.pd()
+            self.T.circle(15)
+            self.T.end_fill()
+
+        def rook(self):
+            self.box()
+            self.T.goto(self.coords[0] - 15, self.coords[1] + 17)
+            self.T.begin_fill()
+            self.T.pd()
+            self.T.fd(30)
+            self.T.lt(90)
+            self.T.fd(15)
+            for i in range(2):
+                self.T.lt(90)
+                self.T.fd(6)
+                self.T.lt(90)
+                self.T.fd(4)
+                self.T.rt(90)
+                self.T.fd(6)
+                self.T.rt(90)
+                self.T.fd(4)
+            self.T.lt(90)
+            self.T.fd(6)
+            self.T.lt(90)
+            self.T.fd(15)
+            self.T.seth(270)
+            self.T.circle(15, 180)
+            self.T.end_fill()
+
+    def __init__(self):
+        self.window = turtle.Screen()
+        self.window.setup(724, 724)
+        self.window.bgpic("background.png")
+        self.window.tracer(0, 0)
+        self.T = turtle.Turtle()
+        self.T.speed(10)
+        self.T.ht()
+        self.write = self.Draw(self.T)
+        self.draw = {"P": self.write.pawn,
+                     "R": self.write.rook,
+                     "K": self.write.king,
+                     "Q": self.write.queen,
+                     "B": self.write.bishop,
+                     "N": self.write.knight}
+
+    def turtleUpdate(self,grid):
+        self.T.clear()
+        for row in range(8):
+            for col in range(8):
+                square = grid[col][row]
+                coords = (row * 90 - 315,  col * 90 - 315)
+                self.T.pu()
+                self.T.goto(coords)
+                color = "white" if "w" in square else "black"
+                self.T.fillcolor(color)
+                self.T.pencolor(color)
+                try:
+                    self.draw[square[0]]()
+                except IndexError:
+                    pass  # empty square
+        turtle.update() #graaaphics
 
 if __name__ == "__main__":
     #order is: Pawn, Queen, Bishop, King, Rook, Knight
