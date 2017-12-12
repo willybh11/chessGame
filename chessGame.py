@@ -152,6 +152,7 @@ class Graphics():
                     pass  # empty square
         turtle.update() #graaaphics
 
+
 class Board:
 
     def __init__(self):
@@ -734,6 +735,7 @@ class Board:
                     printRow = printRow + " - "
             print printRow
 
+
 class Game():
 
     def __init__(self,tuningValues,testing):
@@ -777,8 +779,8 @@ class Game():
 
         while (not self.board.isCheckmate(whoseTurn)):
             whoseTurn = ("b" if whoseTurn == "w" else "w")
+            self.graphics.turtleUpdate(self.board.grid)
             if whoseTurn == playerColor:
-                self.graphics.turtleUpdate(self.board.grid)
                 self.board.printGrid()
                 self.board.takePlayerMove(whoseTurn)
             else:
@@ -873,6 +875,7 @@ class Game():
             if curEval > best[0]:
                 best = [curEval,move]
         return best[1]
+
 
 if __name__ == "__main__":
     #order is: Pawn, Queen, Bishop, King, Rook, Knight
