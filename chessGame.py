@@ -218,6 +218,7 @@ class Board:
             for column in range(8):
                 if (self.grid[row][column]=="K"+whoseTurn):
                     if ([row,column] in threatenedTiles):
+                        print "check"
                         return True
                     else:
                         return False
@@ -229,9 +230,9 @@ class Board:
         if not self.isCheck(whoseTurn):
             return False
 
-        posMoves = self.possibleColorMoves(whoseTurn,False)
+        posMoves = self.possibleColorMoves(whoseTurn,True)
 
-        for move in posMoves:
+        '''for move in posMoves:
             self.movePiece(move)
             if not self.isCheck(whoseTurn):     #if the move has fixed the situation
                 self.undoMove()
@@ -239,8 +240,8 @@ class Board:
                 print "\nCHECK\n"
                 return False
             self.undoMove()
-
-        return True
+        '''
+        return (posMoves == 0)
 
     def undoMove(self):
 
@@ -255,31 +256,35 @@ class Board:
             try:
                 if self.grid[row+1][column-1] == "just get IndexError":
                     pass
+                print "not an index error"
                 returnList.append([row+1,column-1])
             except IndexError:
-                pass
+                print "index error"
 
             try:
                 if self.grid[row+1][column+1] == "just get IndexError":
                     pass
+                print "not an index error"
                 returnList.append([row+1,column+1])
             except IndexError:
-                pass
+                print "index error"
 
         else:
             try:
                 if self.grid[row-1][column-1] == "just get IndexError":
                     pass
+                print "not an index eroor"
                 returnList.append([row-1,column-1])
             except IndexError:
-                pass
+                print "index error"
 
             try:
                 if self.grid[row-1][column+1] == "just get IndexError":
                     pass
+                print "not an indx error"
                 returnList.append([row-1,column+1])
             except IndexError:
-                pass
+                print "index error"
 
         return returnList
 
