@@ -200,7 +200,8 @@ class Board:
             move = posMoves[i][:]
             if move[1] == "P":
                 pawnThreat = self.pawnThreatening(move[2],move[3])
-                posMoves[i] = [move[0],move[1],move[2],move[3],pawnThreat[0][0],pawnThreat[0][1]]
+                posMoves[i] = [move[0],move[1],move[2],move[3]]#,pawnThreat[0][0],pawnThreat[0][1]]
+                posMoves[i].extend(pawnThreat[0])
                 if len(pawnThreat) > 1:#if there is a second possible move for the pawns
                     posMoves.append([move[0],move[1],move[2],move[3],pawnThreat[1][0],pawnThreat[1][1]])
 
@@ -218,7 +219,7 @@ class Board:
             for column in range(8):
                 if (self.grid[row][column]=="K"+whoseTurn):
                     if ([row,column] in threatenedTiles):
-                        print "check"
+                        print "\nCHECK\n"
                         return True
                     else:
                         return False
@@ -241,7 +242,7 @@ class Board:
                 return False
             self.undoMove()
         '''
-        return (posMoves == 0)
+        return (len(posMoves) == 0)
 
     def undoMove(self):
 
@@ -256,35 +257,31 @@ class Board:
             try:
                 if self.grid[row+1][column-1] == "just get IndexError":
                     pass
-                print "not an index error"
                 returnList.append([row+1,column-1])
             except IndexError:
-                print "index error"
+                pass
 
             try:
-                if self.grid[row+1][column+1] == "just get IndexError":
-                    pass
-                print "not an index error"
+                if self.grid[row+1][column+1] == "this line tires to provoke an index error":
+                    pass                            #If that happens, NOTHING happens.
                 returnList.append([row+1,column+1])
             except IndexError:
-                print "index error"
+                pass
 
         else:
             try:
                 if self.grid[row-1][column-1] == "just get IndexError":
                     pass
-                print "not an index eroor"
                 returnList.append([row-1,column-1])
             except IndexError:
-                print "index error"
+                pass
 
             try:
                 if self.grid[row-1][column+1] == "just get IndexError":
                     pass
-                print "not an indx error"
                 returnList.append([row-1,column+1])
             except IndexError:
-                print "index error"
+                pass
 
         return returnList
 
@@ -346,8 +343,8 @@ class Board:
             else:
                 break
 
-        for a in range(1,9-row):
-            move = [piece[1],piece[0],row,col,row+a,col+a]
+        for i in range(1,9-row):
+            move = [piece[1],piece[0],row,col,row+i,col+i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
@@ -360,12 +357,14 @@ class Board:
             else:
                 break
 
-        for a in range(1,9-row):
-            move = [piece[1],piece[0],row,col,row+a,col-a]
+        for i in range(1,9-row):
+            move = [piece[1],piece[0],row,col,row+i,col-i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
                 break
+
+        print returnList    
 
         return returnList
 
@@ -458,11 +457,11 @@ class Board:
 
         return foundMoves
 
-    def isLegalMove(self,move,safeMove): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
+    def isLegalMove(self,move,safeMode): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
         if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:
             return False
         pieceType = move[1]
-        if safeMove:
+        if safeMode:
             self.movePiece(move)
             if self.isCheck(move[0]):
                 self.undoMove()
@@ -569,12 +568,12 @@ class Board:
                 try:
                     if self.grid[move[4]][move[5]][1] == "b":#if it is going to an enemy piece
                         return True
-                except: #here
+                except:
                     pass
 
         elif move[0]=="b":
             isStartingSpot = move[2]==6 #a boolean for if it is in the starting possition
-            if ((move[2]-move[4] == 1) or (isStartingSpot and (move[2]-move[4] == 2)) and (move[3]==move[5])): #basically if it is moving forward by one, or by two if in the starting spot and staying in the same column
+            if ((move[2]-move[4] == 1) or (isStartingSpot and (move[2]-move[4] == 2))) and (move[3]==move[5]): #basically if it is moving forward by one, or by two if in the starting spot and staying in the same column
                 if len(self.grid[move[4]][move[5]]) > 1:#if there is a piece there, because the pawn cannot take a piece by doing this type of move
                     return False
                 return True
@@ -769,7 +768,13 @@ class Game():
         while (not self.board.isCheckmate(whoseTurn)):
             self.graphics.turtleUpdate(self.board.grid)
             self.board.printGrid()
-            self.board.takePlayerMove(whoseTurn)
+            while 1:
+                try:
+                    self.board.takePlayerMove(whoseTurn)
+                    break
+                except:
+                    print "format error: try again\n"
+
             whoseTurn = ("w" if whoseTurn == "b" else "b")
 
 
