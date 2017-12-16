@@ -6,7 +6,8 @@ if __name__ == "__main__":
     aValues.extend([100 for i in range(6)])
     chessPlayerA = Species(lambda x:x**2,aValues,genSize,randomness)
     bValues = [1000 for i in range(6)]
-    bValues.extend([100 for i in range(6)])
+    bValues.append(100)
+    bValues.extend([1 for i in range(5)])
     chessPlayerB = Species(lambda x:x**2,bValues,genSize,randomness)
     generations = 1 #change this value for optimizing stuff
     thisGame = Competition(chessPlayerA,chessPlayerB,Game)
@@ -17,14 +18,14 @@ if __name__ == "__main__":
             for b in range(genSize):
                 playerA = Game(chessPlayerA.currentGeneration[a],True)
                 playerB = Game(chessPlayerB.currentGeneration[b],True)
-                winner = thisGame.compete(playerA,playerB)#returns a 0 if A wins and a 1 if B wins
-
-                if winner:
-                    scoresB[b] += 1
-                    scoresA[a] -= 1
-                else:
-                    scoresA[a] += 1
-                    scoresB[b] += 1
+                winner = thisGame.compete(playerA,playerB)#returns a 0 if A wins and a 1 if B wins -- now it can return a 2 if it is a stalemate
+                if winner < 2:
+                    if winner:
+                        scoresB[b] += 1
+                        scoresA[a] -= 1
+                    else:
+                        scoresA[a] += 1
+                        scoresB[b] += 1
         aBest = chessPlayerA.currentGeneration[scoresA.index(max(scoresA))]
         bBest = chessPlayerB.currentGeneration[scoresB.index(max(scoresB))]
 

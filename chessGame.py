@@ -1,6 +1,7 @@
 #NOTE ALL KNIGHTS ARE REFERRED TO WITH THE LETTER N BECAUSE KING STARTS WITH K
 
 import turtle
+import time
 
 class Graphics():
 
@@ -122,7 +123,7 @@ class Graphics():
     def __init__(self):
         self.window = turtle.Screen()
         self.window.setup(724, 724)
-        self.window.bgpic("background.png")
+        self.window.bgpic("background.gif")
         self.window.tracer(0, 0)
         self.T = turtle.Turtle()
         self.T.speed(10)
@@ -151,7 +152,6 @@ class Graphics():
                 except IndexError:
                     pass  # empty square
         turtle.update() #graaaphics
-
 
 class Board:
 
@@ -211,20 +211,22 @@ class Board:
         threatenedTiles = []
 
         for move in posMoves:
-            threaten = [[move[4],move[5]]]
+            threaten = [move[4],move[5]]
             if not (threaten in threatenedTiles):
                 threatenedTiles.append(threaten)
+
+        #print threatenedTiles
 
         for row in range(8):
             for column in range(8):
                 if (self.grid[row][column]=="K"+whoseTurn):
+                    #print "found a king at",row,column
                     if ([row,column] in threatenedTiles):
-                        print "\nCHECK\n"
                         return True
                     else:
                         return False
 
-        return False
+        return True
 
     def isCheckmate(self,whoseTurn):
 
@@ -242,7 +244,19 @@ class Board:
                 return False
             self.undoMove()
         '''
-        return (len(posMoves) == 0)
+        if (len(posMoves)==0):
+            return True
+        else:
+            print "\nCHECK\n"
+            return False
+
+    def isStalemate(self):
+        if len(self.gridCache)<10:
+            return False
+        if (self.gridCache[-1]==self.gridCache[-5] and self.gridCache[-5]==self.gridCache[-9]):
+            print "\n\nSTALEMATE!!\n\n"
+            return True
+        return False
 
     def undoMove(self):
 
@@ -311,6 +325,7 @@ class Board:
         if pieceType == "Q":
             moves = self.possibleRookMoves(pieceColor,row,col,safeMode)
             moves.extend(self.possibleBishopMoves(pieceColor,row,col,safeMode))
+            #print row,col,"can go to",[[i[4],i[5]] for i in moves]
             return moves
         return {"R":self.possibleRookMoves(pieceColor,row,col,safeMode),
                 "N":self.possibleKnightMoves(pieceColor,row,col,safeMode),
@@ -336,35 +351,33 @@ class Board:
         returnList = []
         piece = self.grid[row][col]
 
-        for i in range(1,row):
+        for i in range(1,row+1):#down and to the right
             move = [piece[1],piece[0],row,col,row-i,col+i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
                 break
 
-        for i in range(1,9-row):
+        for i in range(1,8-row):#up and to the right
             move = [piece[1],piece[0],row,col,row+i,col+i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
                 break
 
-        for i in range(1,row+1):
-            move = [piece[1],piece[0],row,col,row-i,row-i]
+        for i in range(1,row+1):#down and to the left
+            move = [piece[1],piece[0],row,col,row-i,col-i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
                 break
 
-        for i in range(1,9-row):
+        for i in range(1,8-row):#up and to the left
             move = [piece[1],piece[0],row,col,row+i,col-i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
                 break
-
-        print returnList    
 
         return returnList
 
@@ -372,25 +385,25 @@ class Board:
         returnList = []
         piece = self.grid[row][col]
 
-        for i in range(row+1,8):
+        for i in range(row+1,8):#up
             move = [piece[1],piece[0],row,col,i,col]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move[:])
             else:
                 break
-        for i in range(row):
+        for i in range(1,row+1):#down
             move = [piece[1],piece[0],row,col,i,col]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move[:])
             else:
                 break
-        for i in range(col+1,8):
             move = [piece[1],piece[0],row,col,row,i]
-            if self.isLegalMove(move,safeMode):
-                returnList.append(move[:])
-            else:
-                break
-        for i in range(col):
+            for i in range(col+1,8):#right
+                if self.isLegalMove(move,safeMode):
+                    returnList.append(move[:])
+                else:
+                    break
+        for i in range(1,col+1):#left
             move = [piece[1],piece[0],row,col,row,i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move[:])
@@ -739,10 +752,11 @@ class Board:
                     printRow = printRow + " - "
             print printRow
 
-
 class Game():
 
     def __init__(self,tuningValues,testing):
+        self.lastTurnTime = -10.0
+        self.futureTurns = 2
         self.board = Board()
         self.graphics = Graphics()
         self.pieceValues = [tuningValues[i] for i in range(6)]
@@ -878,14 +892,16 @@ class Game():
         return (startVals[piece[0]]+(distanceCoefficients[piece[0]]*distance))
 
     def bestMove(self,color):#compTurn is boolean for if it is the computer's turn
+        if time.clock()-self.lastTurnTime < 0.5:
+            self.futureTurns += 1
+            print "changing futureTurns to",futureTurns
         possMoves = self.board.possibleColorMoves(color,True)
-        best = [self.evaluateMove(possMoves[0],2,True),possMoves[0]]
+        best = [self.evaluateMove(possMoves[0],self.futureTurns,True),possMoves[0]]
         for move in possMoves:
-            curEval = self.evaluateMove(move,2,True)
+            curEval = self.evaluateMove(move,self.futureTurns,True)
             if curEval > best[0]:
                 best = [curEval,move]
         return best[1]
-
 
 if __name__ == "__main__":
     #order is: Pawn, Queen, Bishop, King, Rook, Knight

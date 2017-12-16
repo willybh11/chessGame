@@ -14,7 +14,7 @@ class Species:
 
         self.currentGeneration = [[random.randint(0,values[i]) for i in range(len(values))] for ctzn in range(genSize)]
 
-        print "the first generation is",self.currentGeneration
+        #print "the first generation is",self.currentGeneration
 
         #each citizen of a generation will simply be a list of values, just like real life
 
@@ -61,7 +61,7 @@ class Competition:
     def compete(self,playerA,playerB):
         whoseTurn = "w"
         playerA.board.printGrid()
-        while not (playerA.board.isCheckmate(whoseTurn)):
+        while not (playerA.board.isCheckmate(whoseTurn) or playerA.board.isStalemate()):
             move = (playerA if whoseTurn=="w" else playerB).bestMove(whoseTurn)
             playerA.board.movePiece(move)
             playerA.graphics.turtleUpdate(playerA.board.grid)
@@ -70,9 +70,11 @@ class Competition:
 
             playerA.board.printGrid()
             whoseTurn = ("w" if whoseTurn=="b" else "b")
-
-        print "checkmate"
-        return (0 if whoseTurn == "w" else 1)
+        #playerA.graphics.window.bye() #I can't find out what function I need to run here
+        print ("checkmate" if playerA.board.isCheckmate(whoseTurn) else "stalemate")
+        if playerA.board.isCheckmate(whoseTurn):
+            return (0 if whoseTurn == "w" else 1)
+        return 2
 
 if __name__ == "__main__":
     #just some test code
