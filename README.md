@@ -1,8 +1,9 @@
 #Chess Game w/ AI
+https://github.com/willybh11/chessGame
 
-##Run the ChessGame file:
+##Run the chessGame file:
 	-Play 2 player
 	-Play 1 player against AI
 
 ##Run valuesFinder file:
-	-Two AI play eachother
+	-Two AI play eachother; this is how we trained the AI in the main chessGame file

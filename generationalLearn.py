@@ -1,3 +1,6 @@
+'''
+made by Leo Kastenberg
+'''
 import random
 from chessGame import *
 class Species:

@@ -1,3 +1,6 @@
+'''
+made by Leo Kastenberg
+'''
 from generationalLearn import *
 if __name__ == "__main__":
     genSize = 10

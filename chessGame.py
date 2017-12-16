@@ -1,5 +1,6 @@
-#NOTE ALL KNIGHTS ARE REFERRED TO WITH THE LETTER N BECAUSE KING STARTS WITH K
-
+'''
+made by Leo Kastenberg and Will Hagele
+'''
 import turtle
 import time
 
@@ -755,7 +756,7 @@ class Board:
 class Game():
 
     def __init__(self,tuningValues,testing):
-        self.lastTurnTime = -10.0
+        self.lastTurnTime = 10
         self.futureTurns = 2
         self.board = Board()
         self.graphics = Graphics()
@@ -892,15 +893,20 @@ class Game():
         return (startVals[piece[0]]+(distanceCoefficients[piece[0]]*distance))
 
     def bestMove(self,color):#compTurn is boolean for if it is the computer's turn
-        if time.clock()-self.lastTurnTime < 0.5:
-            self.futureTurns += 1
-            print "changing futureTurns to",futureTurns
+
+        start = time.clock()
         possMoves = self.board.possibleColorMoves(color,True)
         best = [self.evaluateMove(possMoves[0],self.futureTurns,True),possMoves[0]]
         for move in possMoves:
             curEval = self.evaluateMove(move,self.futureTurns,True)
             if curEval > best[0]:
                 best = [curEval,move]
+        if time.clock()-start < 0.5:
+            if self.lastTurnTime < 0.5:
+                self.futureTurns += 1
+                print "changing futureTurns to",self.futureTurns
+        self.lastTurnTime = time.clock()-start
+
         return best[1]
 
 if __name__ == "__main__":
