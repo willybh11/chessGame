@@ -73,7 +73,7 @@ class Competition:
 
             playerA.board.printGrid()
             whoseTurn = ("w" if whoseTurn=="b" else "b")
-        #playerA.graphics.window.bye() #I can't find out what function I need to run here
+        playerA.graphics.turtleSetup()
         print ("checkmate" if playerA.board.isCheckmate(whoseTurn) else "stalemate")
         if playerA.board.isCheckmate(whoseTurn):
             return (0 if whoseTurn == "w" else 1)

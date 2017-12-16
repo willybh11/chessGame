@@ -121,8 +121,9 @@ class Graphics():
             self.T.circle(15, 180)
             self.T.end_fill()
 
-    def __init__(self):
+    def turtleSetup(self):
         self.window = turtle.Screen()
+        self.window.clear()
         self.window.setup(724, 724)
         self.window.bgpic("background.gif")
         self.window.tracer(0, 0)
@@ -760,6 +761,7 @@ class Game():
         self.futureTurns = 2
         self.board = Board()
         self.graphics = Graphics()
+        self.graphics.turtleSetup()
         self.pieceValues = [tuningValues[i] for i in range(6)]
         self.movementCoefficients = [tuningValues[i] for i in range(6,12)]
 
