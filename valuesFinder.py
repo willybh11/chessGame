@@ -3,18 +3,23 @@ made by Leo Kastenberg
 '''
 from generationalLearn import *
 if __name__ == "__main__":
-    genSize = 10
+    genSize = 4
     randomness = 10
-    aValues = [1000 for i in range(6)]
-    aValues.extend([100 for i in range(6)])
+    aValues = [400]
+    aValues.extend([1000 for i in range(6)])
+    aValues.append(100)
+    aValues.extend([50 for i in range(5)])
     chessPlayerA = Species(lambda x:x**2,aValues,genSize,randomness)
-    bValues = [1000 for i in range(6)]
-    bValues.append(100)
-    bValues.extend([1 for i in range(5)])
+    bValues = aValues[:]
     chessPlayerB = Species(lambda x:x**2,bValues,genSize,randomness)
-    generations = 1 #change this value for optimizing stuff
+    generations = 10 #change this value for optimizing stuff
     thisGame = Competition(chessPlayerA,chessPlayerB,Game)
     for generation in range(generations):
+        print "\n\n==========WE ARE ENTERING GENERATION",generation,"==========\n\n"
+        f = open("learningResults.txt","w")
+        record = str(chessPlayerA)+"\n"+str(chessPlayerB)
+        f.write(record)
+        f.close()
         scoresA = [0 for i in range(genSize)]
         scoresB = [0 for i in range(genSize)]
         for a in range(genSize):
@@ -34,5 +39,6 @@ if __name__ == "__main__":
 
         chessPlayerA.breedGen(aBest)
         chessPlayerB.breedGen(bBest)
+
     print "\nthe values for player A are:",chessPlayerA.currentGeneration
     print "\nthe values for player B are:",chessPlayerB.currentGeneration

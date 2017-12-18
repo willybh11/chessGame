@@ -54,6 +54,9 @@ class Species:
                 best = [self.evaluate(i),i]
         return str(best[1])
 
+    def __str__(self):
+        return str(self.currentGeneration)
+
 class Competition:
 
     def __init__(self,speciesA,speciesB,game):

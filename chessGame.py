@@ -358,28 +358,28 @@ class Board:
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
-                break
+                pass#break
 
         for i in range(1,8-row):#up and to the right
             move = [piece[1],piece[0],row,col,row+i,col+i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
-                break
+                pass#break
 
         for i in range(1,row+1):#down and to the left
             move = [piece[1],piece[0],row,col,row-i,col-i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
-                break
+                pass#break
 
         for i in range(1,8-row):#up and to the left
             move = [piece[1],piece[0],row,col,row+i,col-i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move)
             else:
-                break
+                pass#break
 
         return returnList
 
@@ -392,25 +392,26 @@ class Board:
             if self.isLegalMove(move,safeMode):
                 returnList.append(move[:])
             else:
-                break
+                pass#break
         for i in range(1,row+1):#down
             move = [piece[1],piece[0],row,col,i,col]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move[:])
             else:
-                break
-            move = [piece[1],piece[0],row,col,row,i]
+                pass#break
+
             for i in range(col+1,8):#right
+                move = [piece[1],piece[0],row,col,row,i]
                 if self.isLegalMove(move,safeMode):
                     returnList.append(move[:])
                 else:
-                    break
+                    pass#break
         for i in range(1,col+1):#left
             move = [piece[1],piece[0],row,col,row,i]
             if self.isLegalMove(move,safeMode):
                 returnList.append(move[:])
             else:
-                break
+                pass#break
 
         return returnList
 
@@ -908,6 +909,8 @@ class Game():
                 self.futureTurns += 1
                 print "changing futureTurns to",self.futureTurns
         self.lastTurnTime = time.clock()-start
+
+        print best[1]
 
         return best[1]
 
