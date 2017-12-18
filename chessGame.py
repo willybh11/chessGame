@@ -4,7 +4,7 @@ made by Leo Kastenberg and Will Hagele
 import turtle
 import time
 
-class Graphics():
+class Graphics:
 
     class Draw():
 
@@ -755,7 +755,7 @@ class Board:
                     printRow = printRow + " - "
             print printRow
 
-class Game():
+class Game:
 
     def __init__(self,tuningValues,testing):
         self.lastTurnTime = 10
@@ -904,8 +904,8 @@ class Game():
             curEval = self.evaluateMove(move,self.futureTurns,True)
             if curEval > best[0]:
                 best = [curEval,move]
-        if time.clock()-start < 0.5:
-            if self.lastTurnTime < 0.5:
+        if time.clock()-start < 0.4:
+            if self.lastTurnTime < 0.4:
                 self.futureTurns += 1
                 print "changing futureTurns to",self.futureTurns
         self.lastTurnTime = time.clock()-start

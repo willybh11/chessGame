@@ -15,11 +15,8 @@ if __name__ == "__main__":
     generations = 10 #change this value for optimizing stuff
     thisGame = Competition(chessPlayerA,chessPlayerB,Game)
     for generation in range(generations):
-        print "\n\n==========WE ARE ENTERING GENERATION",generation,"==========\n\n"
-        f = open("learningResults.txt","w")
-        record = str(chessPlayerA)+"\n"+str(chessPlayerB)
-        f.write(record)
-        f.close()
+        print "\n\n==========WE ARE ENTERING GENERATION %d==========\n\n" %(generation)
+
         scoresA = [0 for i in range(genSize)]
         scoresB = [0 for i in range(genSize)]
         for a in range(genSize):
@@ -39,6 +36,8 @@ if __name__ == "__main__":
 
         chessPlayerA.breedGen(aBest)
         chessPlayerB.breedGen(bBest)
-
+        with open("learningResults.txt","w") as f: 
+            f.truncate()
+            f.write(str(chessPlayerA)+"\n"+str(chessPlayerB))
     print "\nthe values for player A are:",chessPlayerA.currentGeneration
     print "\nthe values for player B are:",chessPlayerB.currentGeneration

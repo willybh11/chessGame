@@ -65,6 +65,7 @@ class Competition:
         self.Game = game
 
     def compete(self,playerA,playerB):
+        playerA.graphics.turtleUpdate(playerA.board.grid) #palyer A is not defined
         whoseTurn = "w"
         playerA.board.printGrid()
         while not (playerA.board.isCheckmate(whoseTurn) or playerA.board.isStalemate()):
