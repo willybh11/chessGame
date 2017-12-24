@@ -253,6 +253,30 @@ class Board:
             #print "\nCHECK\n"
             return False
 
+    def tilesThreatened(self,whoseTurn):
+        posMoves = self.possibleColorMoves(("w" if whoseTurn == "b" else "b"),False)
+
+        for i in range(len(posMoves)):
+            move = posMoves[i][:]
+            if move[1] == "P":
+                pawnThreat = self.pawnThreatening(move[2],move[3])
+                posMoves[i] = [move[0],move[1],move[2],move[3]]#,pawnThreat[0][0],pawnThreat[0][1]]
+                posMoves[i].extend(pawnThreat[0])
+                if len(pawnThreat) > 1:#if there is a second possible move for the pawns
+                    posMoves.append([move[0],move[1],move[2],move[3],pawnThreat[1][0],pawnThreat[1][1]])
+
+        #posMoves has now been transformed into a list of moves which are not all possible,
+        #but do represent the threatened spaces
+
+        threatenedTiles = []
+
+        for move in posMoves:
+            threaten = [move[4],move[5]]
+            if not (threaten in threatenedTiles):
+                threatenedTiles.append(threaten)
+
+        return threatenedTiles
+
     def isStalemate(self):
         if len(self.gridCache)<10:
             return False
@@ -581,7 +605,6 @@ class Board:
     def possibleColorMoves(self,color,safeMode):#all of the possible moves that a player (specified by the color) can make
 
         foundMoves = []
-
         for row in range(8):
             for column in range(8):
                 piece = self.grid[row][column]
@@ -1052,7 +1075,7 @@ class Game:
                         "P":self.pieceValues[0],
                         "Q":self.pieceValues[1],
                         "B":self.pieceValues[2],
-                        "K":100000,
+                        "K":1000000,
                         "R":self.pieceValues[4],
                         "N":self.pieceValues[5]}
         '''
@@ -1084,6 +1107,7 @@ class Game:
             curEval = self.evaluateMove(move,self.futureTurns,True)
             if curEval > best[0]:
                 best = [curEval,move]
+            print "not an infinite loop"
         if time.clock()-start < 0.4:
             if self.lastTurnTime < 0.4:
                 self.futureTurns += 1
