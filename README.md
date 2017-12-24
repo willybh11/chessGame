@@ -7,3 +7,5 @@ https://github.com/willybh11/chessGame
 
 ##Run valuesFinder file:
 	-Two AI play eachother; this is how we trained the AI in the main chessGame file
+
+#this game was completed on 2037
