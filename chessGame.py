@@ -348,16 +348,13 @@ class Board:
 
     def possibleBishopMoves(self,color,row,col,safeMode):
 
-        #TODO:  the built in structure of how I did this function should let me take out the need to call isLegalMove in the future.
-        #       isLegalMove has to recheck for blocking pieces, but with this structure I might be able to take out that redundancy because if the last checked move is fine, I only need to check one more tile
-
         returnList = []
         piece = self.grid[row][col]
 
         for i in range(1,row+1):#down and to the right
             move = [piece[1],piece[0],row,col,row-i,col+i]
 
-            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
+            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:#this chunk is the code taken from the start of isLegalMove
                 break
             pieceType = move[1]
             if safeMode:
@@ -379,7 +376,7 @@ class Board:
         for i in range(1,8-row):#up and to the right
             move = [piece[1],piece[0],row,col,row+i,col+i]
 
-            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
+            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:#this chunk is the code taken from the start of isLegalMove
                 break
             pieceType = move[1]
             if safeMode:
@@ -401,7 +398,7 @@ class Board:
         for i in range(1,row+1):#down and to the left
             move = [piece[1],piece[0],row,col,row-i,col-i]
 
-            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
+            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:#this chunk is the code taken from the start of isLegalMove
                 break
             pieceType = move[1]
             if safeMode:
@@ -423,7 +420,7 @@ class Board:
         for i in range(1,8-row):#up and to the left
             move = [piece[1],piece[0],row,col,row+i,col-i]
 
-            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
+            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:#this chunk is the code taken from the start of isLegalMove
                 break
             pieceType = move[1]
             if safeMode:
@@ -597,7 +594,7 @@ class Board:
         return foundMoves
 
     def isLegalMove(self,move,safeMode): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
-        if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:
+        if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:
             return False
         pieceType = move[1]
         if safeMode:
@@ -698,7 +695,7 @@ class Board:
 
         if move[0]=="w":#moving as a white piece is opposite of moving as a black piece, so it will be programmed seperately
             isStartingSpot = move[2]==1 #a boolean for if it is in the starting possition
-            if ((move[4]-move[2] == 1) or (isStartingSpot and (move[4]-move[2] == 2))) and (move[3]==move[5]):#basically if it is moving forward by one, or by two if in the starting spot and staying in the same column
+            if ((move[4]-move[2] == 1) or ((isStartingSpot and (move[4]-move[2] == 2)) and (self.grid[move[2]+1][move[3]] == ""))) and (move[3]==move[5]):#basically if it is moving forward by one, or by two if in the starting spot and staying in the same column
                 if len(self.grid[move[4]][move[5]]) > 1:#if there is a piece there, because the pawn cannot take a piece by doing this type of move
                     return False
                 return True
@@ -712,7 +709,7 @@ class Board:
 
         elif move[0]=="b":
             isStartingSpot = move[2]==6 #a boolean for if it is in the starting possition
-            if ((move[2]-move[4] == 1) or (isStartingSpot and (move[2]-move[4] == 2))) and (move[3]==move[5]): #basically if it is moving forward by one, or by two if in the starting spot and staying in the same column
+            if ((move[2]-move[4] == 1) or ((isStartingSpot and (move[2]-move[4] == 2)) and (self.grid[move[2]-1][move[3]] == ""))) and (move[3]==move[5]): #basically if it is moving forward by one, or by two if in the starting spot and staying in the same column
                 if len(self.grid[move[4]][move[5]]) > 1:#if there is a piece there, because the pawn cannot take a piece by doing this type of move
                     return False
                 return True
@@ -830,7 +827,7 @@ class Board:
         self.grid[move[1]][4] = ""
         self.grid[move[1]][rookCoords[0]] = "R"+color
         self.grid[move[1]][move[2]] = ""
-    
+
     def takePlayerMove(self,colorsTurn):    # i changed this
         invalidMove = True
         while invalidMove: #because python doesn't have any heckin' do while loops
@@ -972,7 +969,7 @@ class Game:
 
             chessPlayerA.breedGen(aBest)
             chessPlayerB.breedGen(bBest)
-            with open("learningResults.txt","w") as f: 
+            with open("learningResults.txt","w") as f:
                 f.truncate()
                 f.write(str(chessPlayerA)+"\n"+str(chessPlayerB))
         print "\nthe values for player A are:",chessPlayerA.currentGeneration
@@ -984,20 +981,26 @@ class Game:
         compColor = (move[0] if isComp else ("b" if move[0]=="w" else "w"))
         if movesLeft > 0:
             self.board.movePiece(move)
-            if self.board.isCheckmate(compColor):
-                return -100000
-            elif self.board.isCheckmate("w" if compColor == "b" else "b"):
-                return 100000
+
             '''
             if isComp:
                 if self.board.isCheck(move[0]):
                     self.board.undoMove()
                     return -100000  # it just makes it go like: "stop doing that"'''
             color = ("b" if move[0] == "w" else "w")
-            possMoves = self.board.possibleColorMoves(color,False)
+            possMoves = self.board.possibleColorMoves(color,True)
+
             if isComp:
-                if len(possMoves) == 0:
-                    return -100
+                if len(possMoves)==0:#this is the same, just faster, as calling isCheckmate
+                    self.board.undoMove()
+                    return 100000/movesLeft
+            else:
+                if len(possMoves)==0:
+                    self.board.undoMove()
+                    return -100000/movesLeft
+
+            if isComp:
+
                 best = self.evaluateMove(possMoves[0],movesLeft-1,(not isComp))
                 for nextMove in possMoves:
                     curEval = self.evaluateMove(nextMove,movesLeft-1,(not isComp))
@@ -1005,8 +1008,6 @@ class Game:
                 self.board.undoMove()
                 return best
             else:
-                if len(possMoves) == 0:
-                    return 100
                 worst = self.evaluateMove(possMoves[0],movesLeft-1,(not isComp))
                 for nextMove in possMoves:
                     curEval = self.evaluateMove(nextMove,movesLeft-1,(not isComp))
@@ -1022,8 +1023,8 @@ class Game:
             return evaluation
 
     def evaluateBoard(self,forColor):#evaluates the worth of the board for a given color
-
-        '''if   self.board.isCheckmate(("w" if forColor=="b" else "b")):
+        '''
+        if   self.board.isCheckmate(("w" if forColor=="b" else "b")):
             return  100000
         elif self.board.isCheckmate(forColor):
             return -100000'''
@@ -1054,13 +1055,20 @@ class Game:
                         "K":100000,
                         "R":self.pieceValues[4],
                         "N":self.pieceValues[5]}
-
+        '''
         distanceCoefficients = {"P":self.movementCoefficients[0],
                                 "Q":self.movementCoefficients[1],
                                 "B":self.movementCoefficients[2],
                                 "K":self.movementCoefficients[3],
                                 "R":self.movementCoefficients[4],
                                 "N":self.movementCoefficients[5]}
+        '''
+        distanceCoefficients = {"P":self.pieceValues[1]/12,#the worth of a queen devided by the number of squares plus some more
+                                "Q":0,
+                                "B":0,
+                                "K":0,
+                                "R":0,
+                                "N":0}
 
         return (startVals[piece[0]]+(distanceCoefficients[piece[0]]*distance))
 
@@ -1079,115 +1087,12 @@ class Game:
         if time.clock()-start < 0.4:
             if self.lastTurnTime < 0.4:
                 self.futureTurns += 1
-                print "changing futureTurns to",self.futureTurns
-        self.lastTurnTime = time.clock()-start
+                print "increasing futureTurns to",self.futureTurns
 
-        print best[1]
-
-        return best[1]    
-
-    def evaluateMove(self,move,movesLeft,isComp):
-
-        #all that is done in this function is call itself recursively and take the worst or best case depending on if it is the computer's turn or the player's turn
-        compColor = (move[0] if isComp else ("b" if move[0]=="w" else "w"))
-        if movesLeft > 0:
-            self.board.movePiece(move)
-            if self.board.isCheckmate(compColor):
-                return -100000
-            elif self.board.isCheckmate("w" if compColor == "b" else "b"):
-                return 100000
-            '''
-            if isComp:
-                if self.board.isCheck(move[0]):
-                    self.board.undoMove()
-                    return -100000  # it just makes it go like: "stop doing that"'''
-            color = ("b" if move[0] == "w" else "w")
-            possMoves = self.board.possibleColorMoves(color,False)
-            if isComp:
-                if len(possMoves) == 0:
-                    return -100
-                best = self.evaluateMove(possMoves[0],movesLeft-1,(not isComp))
-                for nextMove in possMoves:
-                    curEval = self.evaluateMove(nextMove,movesLeft-1,(not isComp))
-                    if curEval > best: best = curEval
-                self.board.undoMove()
-                return best
-            else:
-                if len(possMoves) == 0:
-                    return 100
-                worst = self.evaluateMove(possMoves[0],movesLeft-1,(not isComp))
-                for nextMove in possMoves:
-                    curEval = self.evaluateMove(nextMove,movesLeft-1,(not isComp))
-                    if curEval < worst:
-                        worst = curEval
-                self.board.undoMove()
-                return worst
-        else:#this is now if there are no more moves to look into the future
-            self.board.movePiece(move)
-            compColor = (move[0] if isComp else ("w" if move[0]=="b" else "b"))
-            evaluation = self.evaluateBoard(compColor)
-            self.board.undoMove()
-            return evaluation
-
-    def evaluateBoard(self,forColor):#evaluates the worth of the board for a given color
-
-        '''if   self.board.isCheckmate(("w" if forColor=="b" else "b")):
-            return  100000
-        elif self.board.isCheckmate(forColor):
-            return -100000'''
-
-        value = 0
-        for row in range(8):
-            for col in range(8):
-                piece = self.board.grid[row][col]
-                if len(piece)==0:
-                    continue
-                elif piece[1] == forColor:
-                    value += self.evaluatePieceValue(row,col)
-                else:
-                    value -= self.evaluatePieceValue(row,col)
-        return value
-
-    def evaluatePieceValue(self,row,col):
-        piece = self.board.grid[row][col]
-
-        distance = (row if piece[1]=="w" else (7-row))
-
-        #TODO: get better values for the following values from machine learning
-
-        startVals = {
-                        "P":self.pieceValues[0],
-                        "Q":self.pieceValues[1],
-                        "B":self.pieceValues[2],
-                        "K":100000,
-                        "R":self.pieceValues[4],
-                        "N":self.pieceValues[5]}
-
-        distanceCoefficients = {"P":self.movementCoefficients[0],
-                                "Q":self.movementCoefficients[1],
-                                "B":self.movementCoefficients[2],
-                                "K":self.movementCoefficients[3],
-                                "R":self.movementCoefficients[4],
-                                "N":self.movementCoefficients[5]}
-
-        return (startVals[piece[0]]+(distanceCoefficients[piece[0]]*distance))
-
-    def bestMove(self,color):#compTurn is boolean for if it is the computer's turn
-
-        start = time.clock()
-        possMoves = self.board.possibleColorMoves(color,True)
-        if len(possMoves)==0:
-            print "no possible moves"
-            self.board.printGrid()
-        best = [self.evaluateMove(possMoves[0],self.futureTurns,True),possMoves[0]]
-        for move in possMoves:
-            curEval = self.evaluateMove(move,self.futureTurns,True)
-            if curEval > best[0]:
-                best = [curEval,move]
-        if time.clock()-start < 0.4:
-            if self.lastTurnTime < 0.4:
-                self.futureTurns += 1
-                print "changing futureTurns to",self.futureTurns
+        if time.clock()-start > 10:
+            if self.lastTurnTime > 10:
+                self.futureTurns -= 1
+                print "decreasing futureTurns to",self.futureTurns
         self.lastTurnTime = time.clock()-start
 
         print best[1]
