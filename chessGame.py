@@ -929,12 +929,9 @@ class Game:
         self.graphics.turtleUpdate(self.board.grid)
 
         if testing:
-            self.playOther()
+            pass
         else:
            self.playGame[input("How many players? ")]()
-
-    def playOther(self):
-        pass
 
     def twoPlayer(self):
         whoseTurn = "w"
@@ -970,7 +967,7 @@ class Game:
                 self.board.movePiece(self.bestMove(compColor))
 
     def zeroPlayer(self):
-        genSize = 4
+        genSize = 3
         randomness = 10
         aValues = [400]
         aValues.extend([1000 for i in range(6)])#values of the pieces
@@ -982,12 +979,31 @@ class Game:
         chessPlayerB = Species(lambda x:x**2,bValues,genSize,randomness)
         generations = 10 #change this value for optimizing stuff
         thisGame = Competition(chessPlayerA,chessPlayerB,Game)
+
+        #the following section of code was an after-thought. It will read from learnignResults.txt and take the tuning values reached from last time
+
+        with open("learningResults.txt","r") as f:
+            latest = f.read()
+            if latest != "":#if we have values from previous attempts
+                aGen,bGen = latest.split("--")
+                aGen = aGen.split("\n-\n")
+                bGen = bGen.split("\n-\n")
+                for i in range(genSize):
+                    aGen[i] = aGen[i].split()
+                    for j in range(12):
+                        aGen[i][j] = int(aGen[i][j])
+                    bGen[i] = bGen[i].split()
+                    for j in range(12):
+                        bGen[i][j] = int(bGen[i][j])
+                chessPlayerA.currentGeneration = aGen
+                chessPlayerB.currentGeneration = bGen
+
         for generation in range(generations):
             print "\n\n==========WE ARE ENTERING GENERATION %d==========\n\n" %(generation)
 
             with open("learningResults.txt","w") as f:
                 f.truncate()
-                f.write(str(chessPlayerA)+"\n--\n\n"+str(chessPlayerB))
+                f.write(str(chessPlayerA)+"--"+str(chessPlayerB))
 
             scoresA = [0 for i in range(genSize)]
             scoresB = [0 for i in range(genSize)]
@@ -1147,4 +1163,9 @@ class Game:
 
 if __name__ == "__main__":
     #order is: Pawn, Queen, Bishop, King, Rook, Knight
-    game = Game([1,10,4,1000,5,3,300,0.1,0.3,-1,0.3,0.5],False)
+    with open("learningResults.txt","r") as f:
+        firstLine = f.readline()
+        if firstLine == "":
+            game = Game([1,10,4,1000,5,3,300,0.1,0.3,-1,0.3,0.5],False)#creates a Game class with some generic values
+        else:
+            game = Game(firstLine.split(),False)#creates a Game class with the latest tuning Values
