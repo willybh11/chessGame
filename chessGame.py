@@ -1138,7 +1138,7 @@ class Game:
 
         return best[1]
 
-if __name__ == "__main__":
+def main():
     #order is: Pawn, Queen, Bishop, King, Rook, Knight
     with open("learningResults.txt","r") as f:
         firstLine = f.readline()
@@ -1146,3 +1146,6 @@ if __name__ == "__main__":
             game = Game([1,10,4,1000,5,3,300,0.1,0.3,-1,0.3,0.5],False)#creates a Game class with some generic values
         else:
             game = Game(firstLine.split(),False)#creates a Game class with the latest tuning Values
+
+if __name__ == "__main__":
+    main()
