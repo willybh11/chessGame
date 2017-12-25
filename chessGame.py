@@ -988,6 +988,7 @@ class Game:
             scoresB = [0 for i in range(genSize)]
             for a in range(genSize):
                 for b in range(genSize):
+                    print "\n\nWE ARE ON GAME %d\n\n" % (3*a+b)
                     playerA = Game(chessPlayerA.currentGeneration[a],True)  #each player is an instance of the Game class with different sets of the values which we are throwing out.
                                                                             #yes, it is stupid that we have multiple instances of the Game class within the Game class, but Will insisted
                     playerB = Game(chessPlayerB.currentGeneration[b],True)
