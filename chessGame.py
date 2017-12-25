@@ -277,12 +277,22 @@ class Board:
 
         return threatenedTiles
 
-    def isStalemate(self):
+    def isStalemate(self,whoseTurn):
         if len(self.gridCache)<10:
             return False
         if (self.gridCache[-1]==self.gridCache[-5] and self.gridCache[-5]==self.gridCache[-9]):
             print "\n\nSTALEMATE!!\n\n"
             return True
+
+        possMoves = self.possibleColorMoves(whoseTurn)
+        for row in range(8):
+            for col in range(8):
+                if self.grid[row][col] == "K"+whoseTurn:
+                    kingCoords = [row,col]
+                    break
+        if (not (kingCoords in self.tilesThreatened(whoseTurn))) and len(possMoves)==0:#if the king isn't threatened, but there are no possible moves, then it is stalemate
+            return True
+
         return False
 
     def undoMove(self):
