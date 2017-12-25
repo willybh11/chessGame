@@ -985,6 +985,10 @@ class Game:
         for generation in range(generations):
             print "\n\n==========WE ARE ENTERING GENERATION %d==========\n\n" %(generation)
 
+            with open("learningResults.txt","w") as f:
+                f.truncate()
+                f.write(str(chessPlayerA)+"\n--\n\n"+str(chessPlayerB))
+
             scoresA = [0 for i in range(genSize)]
             scoresB = [0 for i in range(genSize)]
             for a in range(genSize):

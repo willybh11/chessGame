@@ -55,7 +55,13 @@ class Species:
         return str(best[1])
 
     def __str__(self):
-        return str(self.currentGeneration)
+        string = ""
+        for i in self.currentGeneration:
+            citizen = ""
+            for j in i:
+                citizen+=str(j)+" "
+            string+= citizen+"\n-\n"
+        return string
 
 class Competition:
 
