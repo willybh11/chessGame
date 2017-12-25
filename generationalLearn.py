@@ -38,9 +38,8 @@ class Species:
                 evalutedGeneration.append(evaluatedCitizen)
             self.currentGeneration = [self.breed(citizen,random.choice(bestTwo)) for citizen in self.currentGeneration[:]]
 
-    def breed(self,aParent,bParentwValue):
-        bParent = bParentwValue[1]
-
+    def breed(self,aParent,bParent):
+        print "breading",aParent,"with",bParent
         return [((aParent[i]+bParent[i])/2 + random.randint(-self.randomness,self.randomness)) for i in range(len(aParent))] #averages the two parents and then adds randomness
 
     def breedGen(self,best):
