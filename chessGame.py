@@ -1011,7 +1011,7 @@ class Game:
             chessPlayerB.breedGen(bBest)
             with open("learningResults.txt","w") as f:
                 f.truncate()
-                f.write(str(chessPlayerA)+"\n"+str(chessPlayerB))
+                f.write(str(chessPlayerA)+"\n--\n\n"+str(chessPlayerB))
         print "\nthe values for player A are:",chessPlayerA.currentGeneration
         print "\nthe values for player B are:",chessPlayerB.currentGeneration
 
