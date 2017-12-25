@@ -465,7 +465,7 @@ class Board:
 
         return returnList
 
-    def possibleRookMoves(self,color,row,col,safeMode):
+    def possibleRookMoves(self,color,row,col,safeMode): #TODO: fix bug where rook skips over pieces/maybe jumps over the side of the board?
         returnList = []
         piece = self.grid[row][col]
 
@@ -1003,6 +1003,11 @@ class Game:
         #all that is done in this function is call itself recursively and take the worst or best case depending on if it is the computer's turn or the player's turn
         compColor = (move[0] if isComp else ("b" if move[0]=="w" else "w"))
         if movesLeft > 0:
+            goTo = self.board.grid[move[4]][move[5]]
+            if goTo != "":  #just prevents an index error
+                if goTo[0] == "K":#if the move would take the king
+                    return ((1 if isComp else -1) * (100000/movesLeft))#this is just like checking for checkmates, but it is more efficient
+
             self.board.movePiece(move)
 
             '''
@@ -1011,8 +1016,8 @@ class Game:
                     self.board.undoMove()
                     return -100000  # it just makes it go like: "stop doing that"'''
             color = ("b" if move[0] == "w" else "w")
-            possMoves = self.board.possibleColorMoves(color,True)
-
+            possMoves = self.board.possibleColorMoves(color,False)
+            '''
             if isComp:
                 if len(possMoves)==0:#this is the same, just faster, as calling isCheckmate
                     self.board.undoMove()
@@ -1021,8 +1026,8 @@ class Game:
                 if len(possMoves)==0:
                     self.board.undoMove()
                     return -100000/movesLeft
-
-            if isComp:
+            '''
+            if not isComp:
 
                 best = self.evaluateMove(possMoves[0],movesLeft-1,(not isComp))
                 for nextMove in possMoves:
@@ -1107,7 +1112,6 @@ class Game:
             curEval = self.evaluateMove(move,self.futureTurns,True)
             if curEval > best[0]:
                 best = [curEval,move]
-            print "not an infinite loop"
         if time.clock()-start < 0.4:
             if self.lastTurnTime < 0.4:
                 self.futureTurns += 1
