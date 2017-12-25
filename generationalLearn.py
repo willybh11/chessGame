@@ -69,19 +69,26 @@ class Competition:
         whoseTurn = "w"
         playerA.board.printGrid()
         while not (playerA.board.isCheckmate(whoseTurn) or playerA.board.isStalemate(whoseTurn)):
-            move = (playerA if whoseTurn=="w" else playerB).bestMove(whoseTurn)
+
+            move = (playerA if whoseTurn=="w" else playerB).bestMove(whoseTurn) #playerA is always white.
+                                                                                #This code will determine whose turn it is in terms of instances of the class and figure out their best move
+
+            #now we have to update the boards twice because we need to keep both players up-to-date on the current board
+
             playerA.board.movePiece(move)
             playerA.graphics.turtleUpdate(playerA.board.grid)
             playerB.board.movePiece(move)
             playerB.graphics.turtleUpdate(playerB.board.grid)
 
-            playerA.board.printGrid()
+            playerA.board.printGrid()#TODO: remove this line. It is best to keep it here so we have a log of past moves for debugging purposes
             whoseTurn = ("w" if whoseTurn=="b" else "b")
         playerA.graphics.turtleSetup()
         print ("checkmate" if playerA.board.isCheckmate(whoseTurn) else "stalemate")
-        if playerA.board.isCheckmate(whoseTurn):
+
+        if playerA.board.isStalemate(whoseTurn):
+            return 2
+        else:#otherwise it would have ended with a checkmate. Now we return the corresponding code for the player who won, which will be the player whose turn it is not
             return (0 if whoseTurn == "w" else 1)
-        return 2
 
 if __name__ == "__main__":
     #just some test code

@@ -916,7 +916,7 @@ class Board:
 class Game:
 
     def __init__(self,tuningValues,testing):
-        self.lastTurnTime = 10
+        self.lastTurnTime = 5
         self.futureTurns = 2
         self.board = Board()
         self.graphics = Graphics()
@@ -937,7 +937,7 @@ class Game:
 
     def twoPlayer(self):
         whoseTurn = "w"
-        while (not self.board.isCheckmate(whoseTurn)):
+        while not (self.board.isCheckmate(whoseTurn) or self.board.isStalemate(whoseTurn)):
             self.graphics.turtleUpdate(self.board.grid)
             self.board.printGrid()
             while 1:
@@ -951,7 +951,7 @@ class Game:
 
 
         self.board.printGrid()
-        print "checkmate"
+        print ("checkmate" if self.board.isCheckmate(whoseTurn) else "stalemate")
 
     def singlePlayer(self):
         playerColor = raw_input("\nwhat color do you want to play as?\n>>>")
@@ -959,7 +959,7 @@ class Game:
 
         whoseTurn = "b"#start as black because it switches colors at the start of the loop
 
-        while (not self.board.isCheckmate(whoseTurn)):
+        while not (self.board.isCheckmate(whoseTurn) or self.board.isStalemate(whoseTurn)):
             whoseTurn = ("b" if whoseTurn == "w" else "w")
             self.graphics.turtleUpdate(self.board.grid)
             if whoseTurn == playerColor:
@@ -972,10 +972,11 @@ class Game:
         genSize = 4
         randomness = 10
         aValues = [400]
-        aValues.extend([1000 for i in range(6)])
-        aValues.append(100)
-        aValues.extend([50 for i in range(5)])
-        chessPlayerA = Species(lambda x:x**2,aValues,genSize,randomness)
+        aValues.extend([1000 for i in range(6)])#values of the pieces
+        aValues.append(1000)#the pawn worth devisor
+        aValues.extend([50 for i in range(5)])#values which are currently being thrown out, but may be of use later
+        chessPlayerA = Species(lambda x:x**2,aValues,genSize,randomness)    #the lambda function never gets used because this training algorithm is only adversarial.
+                                                                            #the lambda function would be used if we could train it without an adversarial algorithm
         bValues = aValues[:]
         chessPlayerB = Species(lambda x:x**2,bValues,genSize,randomness)
         generations = 10 #change this value for optimizing stuff
@@ -987,7 +988,8 @@ class Game:
             scoresB = [0 for i in range(genSize)]
             for a in range(genSize):
                 for b in range(genSize):
-                    playerA = Game(chessPlayerA.currentGeneration[a],True)
+                    playerA = Game(chessPlayerA.currentGeneration[a],True)  #each player is an instance of the Game class with different sets of the values which we are throwing out.
+                                                                            #yes, it is stupid that we have multiple instances of the Game class within the Game class, but Will insisted
                     playerB = Game(chessPlayerB.currentGeneration[b],True)
                     winner = thisGame.compete(playerA,playerB)#returns a 0 if A wins and a 1 if B wins -- now it can return a 2 if it is a stalemate
                     if winner < 2:
@@ -1101,7 +1103,8 @@ class Game:
                                 "R":self.movementCoefficients[4],
                                 "N":self.movementCoefficients[5]}
         '''
-        distanceCoefficients = {"P":self.pieceValues[1]/12,#the worth of a queen devided by the number of squares plus some more
+        distanceCoefficients = {"P":self.pieceValues[1]/(movementCoefficients[0]/50),   #the worth of a queen devided by a number which is trained by the algorithm
+                                                                                        #It has to then be devided by 10 because the randomness has to be the same for all values being trained
                                 "Q":0,
                                 "B":0,
                                 "K":0,
