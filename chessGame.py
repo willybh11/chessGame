@@ -197,33 +197,12 @@ class Board:
 
         #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
 
-        posMoves = self.possibleColorMoves(("w" if whoseTurn == "b" else "b"),False)
+        threatenedTiles = self.tilesThreatened(whoseTurn)
 
-        for i in range(len(posMoves)):
-            move = posMoves[i][:]
-            if move[1] == "P":
-                pawnThreat = self.pawnThreatening(move[2],move[3])
-                posMoves[i] = [move[0],move[1],move[2],move[3]]#,pawnThreat[0][0],pawnThreat[0][1]]
-                posMoves[i].extend(pawnThreat[0])
-                if len(pawnThreat) > 1:#if there is a second possible move for the pawns
-                    posMoves.append([move[0],move[1],move[2],move[3],pawnThreat[1][0],pawnThreat[1][1]])
-
-        #posMoves has now been transformed into a list of moves which are not all possible,
-        #but do represent the threatened spaces
-
-        threatenedTiles = []
-
-        for move in posMoves:
-            threaten = [move[4],move[5]]
-            if not (threaten in threatenedTiles):
-                threatenedTiles.append(threaten)
-
-        #print threatenedTiles
-
+        #these nested loops find where the king is. It might be better to save where the king is, but this function is no longer called very often
         for row in range(8):
             for column in range(8):
                 if (self.grid[row][column]=="K"+whoseTurn):
-                    #print "found a king at",row,column
                     if ([row,column] in threatenedTiles):
                         return True
                     else:
@@ -256,7 +235,7 @@ class Board:
     def tilesThreatened(self,whoseTurn):
         posMoves = self.possibleColorMoves(("w" if whoseTurn == "b" else "b"),False)
 
-        for i in range(len(posMoves)):
+        for i in range(len(posMoves)):    #the possible response moves. These tell me all of the threatened tiles exceot for the pawns
             move = posMoves[i][:]
             if move[1] == "P":
                 pawnThreat = self.pawnThreatening(move[2],move[3])
@@ -1107,8 +1086,6 @@ class Game:
 
         distance = (row if piece[1]=="w" else (7-row))
 
-        #TODO: get better values for the following values from machine learning
-
         startVals = {
                         "P":self.pieceValues[0],
                         "Q":self.pieceValues[1],
@@ -1137,7 +1114,7 @@ class Game:
     def bestMove(self,color):#compTurn is boolean for if it is the computer's turn
 
         start = time.clock()
-        possMoves = self.board.possibleColorMoves(color,True)
+        possMoves = self.board.possibleColorMoves(color,False)
         if len(possMoves)==0:
             print "no possible moves"
             self.board.printGrid()
