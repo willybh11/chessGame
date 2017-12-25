@@ -1018,7 +1018,7 @@ class Game:
                             scoresB[b] += 1
                             scoresA[a] -= 1
                         else:
-                            scoresA[a] += 1
+                            scoresA[a] -= 1
                             scoresB[b] += 1
             aBest = chessPlayerA.currentGeneration[scoresA.index(max(scoresA))]
             bBest = chessPlayerB.currentGeneration[scoresB.index(max(scoresB))]
