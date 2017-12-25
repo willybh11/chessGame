@@ -284,7 +284,7 @@ class Board:
             print "\n\nSTALEMATE!!\n\n"
             return True
 
-        possMoves = self.possibleColorMoves(whoseTurn)
+        possMoves = self.possibleColorMoves(whoseTurn,True)
         for row in range(8):
             for col in range(8):
                 if self.grid[row][col] == "K"+whoseTurn:
@@ -680,7 +680,6 @@ class Board:
 
     def isLegalKnightMove(self,move): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
         if move[4]>7 or move[5]>7 or move[4]<0 or move[5]<0: return False
-
         deltaRow,deltaCol = abs(move[2]-move[4]),abs(move[3]-move[5])
         movementCorrect = False#they need to be false by default, if they should be true I will make them true
         gotoSafe = False
@@ -688,13 +687,12 @@ class Board:
             movementCorrect = True
 
         try:
-            if (move[0] == "w") and (self.grid[move[4]][move[5]][0] == "b"):
+            if (move[0] == "w") and (self.grid[move[4]][move[5]][1] == "b"):
                 gotoSafe = True
-            elif (move[0] == "b") and (self.grid[move[4]][move[5]][0] == "w"):
+            elif (move[0] == "b") and (self.grid[move[4]][move[5]][1] == "w"):
                 gotoSafe = True
         except IndexError:
             gotoSafe = True
-
         return (movementCorrect and gotoSafe)
 
     def isLegalBishopMove(self,move): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
@@ -873,7 +871,10 @@ class Board:
                 col = self.letterConvert[inputMove[0].upper()]
                 rowto = int(inputMove[3]) - 1
                 colto = self.letterConvert[inputMove[2].upper()]
-                piece = self.grid[row][col][0]
+                try:
+                    piece = self.grid[row][col][0]
+                except IndexError:
+                    piece = "P"#if you accidentally typed the coords for an empty square then we just need to pick a placeholder string. It will be a bad move anyway
 
                 rawMove = [ piece, row, col, rowto, colto ]
 
@@ -1103,7 +1104,7 @@ class Game:
                                 "R":self.movementCoefficients[4],
                                 "N":self.movementCoefficients[5]}
         '''
-        distanceCoefficients = {"P":self.pieceValues[1]/(movementCoefficients[0]/50),   #the worth of a queen devided by a number which is trained by the algorithm
+        distanceCoefficients = {"P":self.pieceValues[1]/(self.movementCoefficients[0]/50),   #the worth of a queen devided by a number which is trained by the algorithm
                                                                                         #It has to then be devided by 10 because the randomness has to be the same for all values being trained
                                 "Q":0,
                                 "B":0,
@@ -1142,4 +1143,4 @@ class Game:
 
 if __name__ == "__main__":
     #order is: Pawn, Queen, Bishop, King, Rook, Knight
-    game = Game([1,10,4,1000,5,3,0.3,0.1,0.3,-1,0.3,0.5],False)
+    game = Game([1,10,4,1000,5,3,300,0.1,0.3,-1,0.3,0.5],False)
