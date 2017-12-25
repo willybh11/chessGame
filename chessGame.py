@@ -1114,7 +1114,7 @@ class Game:
     def bestMove(self,color):#compTurn is boolean for if it is the computer's turn
 
         start = time.clock()
-        possMoves = self.board.possibleColorMoves(color,False)
+        possMoves = self.board.possibleColorMoves(color,True)
         if len(possMoves)==0:
             print "no possible moves"
             self.board.printGrid()

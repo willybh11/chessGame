@@ -84,9 +84,10 @@ class Competition:
             playerA.graphics.turtleUpdate(playerA.board.grid)
             playerB.board.movePiece(move)
             playerB.graphics.turtleUpdate(playerB.board.grid)
-
             playerA.board.printGrid()#TODO: remove this line. It is best to keep it here so we have a log of past moves for debugging purposes
             whoseTurn = ("w" if whoseTurn=="b" else "b")
+            if playerA.board.isCheck(whoseTurn): print "\nCHECK\n"
+
         playerA.graphics.turtleSetup()
         print ("checkmate" if playerA.board.isCheckmate(whoseTurn) else "stalemate")
 
