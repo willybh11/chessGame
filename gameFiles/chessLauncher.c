@@ -2,6 +2,6 @@
 
 int main()
 {
-  system("python chessGame.py");
+  system("python gameFiles/chessGame.py");
   return 1;
 }
