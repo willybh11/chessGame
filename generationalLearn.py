@@ -68,7 +68,7 @@ class Competition:
         playerA.graphics.turtleUpdate(playerA.board.grid) #palyer A is not defined
         whoseTurn = "w"
         playerA.board.printGrid()
-        while not (playerA.board.isCheckmate(whoseTurn) or playerA.board.isStalemate()):
+        while not (playerA.board.isCheckmate(whoseTurn) or playerA.board.isStalemate(whoseTurn)):
             move = (playerA if whoseTurn=="w" else playerB).bestMove(whoseTurn)
             playerA.board.movePiece(move)
             playerA.graphics.turtleUpdate(playerA.board.grid)
