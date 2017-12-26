@@ -80,9 +80,9 @@ class Competition:
 
             #now we have to update the boards twice because we need to keep both players up-to-date on the current board
 
-            playerA.board.movePiece(move)
+            playerA.board.movePiece(move,True)
             playerA.graphics.turtleUpdate(playerA.board.grid)
-            playerB.board.movePiece(move)
+            playerB.board.movePiece(move,True)
             playerB.graphics.turtleUpdate(playerB.board.grid)
             playerA.board.printGrid()#TODO: remove this line. It is best to keep it here so we have a log of past moves for debugging purposes
             whoseTurn = ("w" if whoseTurn=="b" else "b")

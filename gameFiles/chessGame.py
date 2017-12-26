@@ -594,8 +594,16 @@ class Board:
         return returnList
 
     def possibleColorMoves(self,color,safeMode):#all of the possible moves that a player (specified by the color) can make
-
         foundMoves = []
+        if safeMode:
+            if self.isCheck(color):
+                spots = (self.blackCastleableSpots if color=="b" else self.whiteCastleableSpots)
+                for i in spots:
+                    move = ["castle"]
+                    move.extend(i)
+                    if self.isLegalCastle(move):
+                        foundMoves.append(move)
+
         for row in range(8):
             for column in range(8):
                 piece = self.grid[row][column]
@@ -799,6 +807,9 @@ class Board:
         #it is highly advised that you look at a chess board while reading this in order to understand it
         #I had to look at one the whole time I programmed it anyway
 
+        if self.isCheck(color):
+            return False
+
         if color == "w":
             if not ([move[1],move[2]] in self.whiteCastleableSpots):
                 print "can only castle at",self.whiteCastleableSpots
@@ -812,7 +823,7 @@ class Board:
         row = (0 if color=="w" else 7)#the row that this will be happening on
 
         if move[2] == 0:#if it is the left rook
-            for col in range(1,4):
+            for col in range(1,5):
                 if not (self.grid[row][col] == ""):
                     print "in the way"
                     return False
