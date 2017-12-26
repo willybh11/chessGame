@@ -601,7 +601,7 @@ class Board:
                 for i in spots:
                     move = ["castle"]
                     move.extend(i)
-                    if self.isLegalCastle(move):
+                    if self.isLegalCastle(color,move):
                         foundMoves.append(move)
 
         for row in range(8):
@@ -1046,6 +1046,8 @@ class Game:
                     self.board.undoMove()
                     return -100000  # it just makes it go like: "stop doing that"'''
             color = ("b" if move[0] == "w" else "w")
+            if self.board.isStalemate(color):
+                return 0#the value of a stalemate is 0. This way the AI will want a stalemate if it is behind in pieces and it will avoid one if it is ahead
             possMoves = self.board.possibleColorMoves(color,False)
             '''
             if isComp:
@@ -1081,13 +1083,15 @@ class Game:
             return evaluation
 
     def evaluateBoard(self,forColor):#evaluates the worth of the board for a given color
-        '''
-        if   self.board.isCheckmate(("w" if forColor=="b" else "b")):
-            return  100000
+'''
+        if self.board.isCheckmate("w" if forColor=="b" else "b"):
+            return  100000/self.futureTurns
         elif self.board.isCheckmate(forColor):
-            return -100000'''
-
+            return -100000/self.futureTurns
+'''
         value = 0
+
+        #adds up the values for each of the pieces
         for row in range(8):
             for col in range(8):
                 piece = self.board.grid[row][col]
@@ -1123,7 +1127,7 @@ class Game:
                                                                                         #It has to then be devided by 10 because the randomness has to be the same for all values being trained
                                 "Q":0,
                                 "B":0,
-                                "K":0,
+                                "K":self.movementCoefficients[3],
                                 "R":0,
                                 "N":0}
 

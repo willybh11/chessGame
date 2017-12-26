@@ -98,5 +98,6 @@ class Competition:
 
 if __name__ == "__main__":
     #just some test code
-    comp = Competition(Species(False,[10,100,40,10000,50,30,3,1,3,-10,3,5],10,2),Species(False,[10,100,40,10000,50,30,3,1,3,-10,3,5],10,2),Game)
-    comp.compete(Game([1,10,4,1000,5,3,0.3,0.1,0.3,-1,0.3,0.5],1),Game([1,10,4,1000,5,3,0.3,0.1,0.3,-1,0.3,0.5],1))
+    '''comp = Competition(Species(False,[10,100,40,10000,50,30,3,1,3,-10,3,5],10,2),Species(False,[10,100,40,10000,50,30,3,1,3,-10,3,5],10,2),Game)
+    comp.compete(Game([1,10,4,1000,5,3,0.3,0.1,0.3,-1,0.3,0.5],1),Game([1,10,4,1000,5,3,0.3,0.1,0.3,-1,0.3,0.5],1))'''
+    print "you shouldn;t be running this file"
