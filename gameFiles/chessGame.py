@@ -128,7 +128,7 @@ class Graphics:
         self.window = turtle.Screen()
         self.window.clear()
         self.window.setup(724, 724)
-        self.window.bgpic("gameFiles/background.gif")
+        self.window.bgpic("background.gif" if ("linux" in platform) else "gameFiles/background.gif")
         self.window.tracer(0, 0)
         self.T = turtle.Turtle()
         self.T.speed(10)
