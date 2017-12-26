@@ -859,6 +859,12 @@ class Board:
 
                 rawMove = [ piece, row, col, rowto, colto ]
 
+                move = [colorsTurn]
+                move.extend(rawMove)
+                if self.isLegalMove(move,True):
+                    self.movePiece(move)
+                    invalidMove = False
+
             except: # not enough inputs or castle
 
                 if inputMove[0].lower() == "castle":#castles are in the format ["castle",withRookRow,withRookCol]
@@ -867,18 +873,11 @@ class Board:
                     if self.isLegalCastle(colorsTurn,rawMove):
                         self.castleMove(rawMove)
                         invalidMove = False
-                    else:
-                        print "that move was not a legal move, please check how you formated it (invalid castle)"
                 else:
                     print "invalid num of inputs"
 
-            move = [colorsTurn]
-            move.extend(rawMove)
-            if self.isLegalMove(move,True):
-                self.movePiece(move)
-                invalidMove = False
-            else:
-                print "that move was not a legal move, please check how you formated it (after castlecheck)"
+            if invalidMove:
+                print "that move was not a legal move, please check how you formated it"
 
     def printGrid(self):
 
