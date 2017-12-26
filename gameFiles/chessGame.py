@@ -3,6 +3,7 @@ made by Leo Kastenberg and Will Hagele
 '''
 import turtle
 import time
+import random
 from generationalLearn import *
 
 class Graphics:
@@ -947,7 +948,7 @@ class Game:
 
     def zeroPlayer(self):
         genSize = 3
-        randomness = 10
+        randomness = 50
         aValues = [400]
         aValues.extend([1000 for i in range(6)])#values of the pieces
         aValues.append(1000)#the pawn worth devisor
@@ -961,7 +962,7 @@ class Game:
 
         #the following section of code was an after-thought. It will read from learnignResults.txt and take the tuning values reached from last time
 
-        with open("learningResults.txt","r") as f:
+        with open("gameFiles/learningResults.txt","r") as f:
             latest = f.read()
             if latest != "":#if we have values from previous attempts
                 aGen,bGen = latest.split("--")
@@ -980,7 +981,7 @@ class Game:
         for generation in range(generations):
             print "\n\n==========WE ARE ENTERING GENERATION %d==========\n\n" %(generation)
 
-            with open("learningResults.txt","w") as f:
+            with open("gameFiles/learningResults.txt","w") as f:
                 f.truncate()
                 f.write(str(chessPlayerA)+"--"+str(chessPlayerB))
 
@@ -1005,7 +1006,7 @@ class Game:
 
             chessPlayerA.breedGen(aBest)
             chessPlayerB.breedGen(bBest)
-            with open("learningResults.txt","w") as f:
+            with open("gameFiles/learningResults.txt","w") as f:
                 f.truncate()
                 f.write(str(chessPlayerA)+"\n--\n\n"+str(chessPlayerB))
         print "\nthe values for player A are:",chessPlayerA.currentGeneration
@@ -1124,11 +1125,15 @@ class Game:
             curEval = self.evaluateMove(move,self.futureTurns,True)
             if curEval > best[0]:
                 best = [curEval,move]
+            elif (abs(curEval - best[0]) < 5):
+                if random.choice([1,0]):
+                    best = [curEval,move]
+
+        #the following chunk of code is for determining how far into the future it should look
         if time.clock()-start < 0.4:
             if self.lastTurnTime < 0.4:
                 self.futureTurns += 1
                 print "increasing futureTurns to",self.futureTurns
-
         if time.clock()-start > 10:
             if self.lastTurnTime > 10:
                 self.futureTurns -= 1
@@ -1139,14 +1144,11 @@ class Game:
 
         return best[1]
 
-def main():
+if __name__ == "__main__":
     #order is: Pawn, Queen, Bishop, King, Rook, Knight
-    with open("learningResults.txt","r") as f:
+    with open("gameFiles/learningResults.txt","r") as f:
         firstLine = f.readline()
         if firstLine == "":
             game = Game([1,10,4,1000,5,3,300,0.1,0.3,-1,0.3,0.5],False)#creates a Game class with some generic values
         else:
             game = Game(firstLine.split(),False)#creates a Game class with the latest tuning Values
-
-if __name__ == "__main__":
-    main()
