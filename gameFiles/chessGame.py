@@ -373,7 +373,7 @@ class Board:
                 break
             pieceType = move[1]
             if safeMode:
-                self.movePiece(move)
+                self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
                     continue
@@ -395,7 +395,7 @@ class Board:
                 break
             pieceType = move[1]
             if safeMode:
-                self.movePiece(move)
+                self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
                     continue
@@ -417,7 +417,7 @@ class Board:
                 break
             pieceType = move[1]
             if safeMode:
-                self.movePiece(move)
+                self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
                     continue
@@ -439,7 +439,7 @@ class Board:
                 break
             pieceType = move[1]
             if safeMode:
-                self.movePiece(move)
+                self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
                     continue
@@ -467,7 +467,7 @@ class Board:
                 break
             pieceType = move[1]'''
             if safeMode:
-                self.movePiece(move)
+                self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
                     continue
@@ -489,7 +489,7 @@ class Board:
                 break
             pieceType = move[1]'''
             if safeMode:
-                self.movePiece(move)
+                self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
                     continue
@@ -511,7 +511,7 @@ class Board:
                 break
             pieceType = move[1]'''
             if safeMode:
-                self.movePiece(move)
+                self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
                     continue
@@ -533,7 +533,7 @@ class Board:
                 break
             pieceType = move[1]'''
             if safeMode:
-                self.movePiece(move)
+                self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
                     continue
@@ -612,7 +612,7 @@ class Board:
             return False
         pieceType = move[1]
         if safeMode:
-            self.movePiece(move)
+            self.movePiece(move,False)
             if self.isCheck(move[0]):
                 self.undoMove()
                 return False
@@ -764,24 +764,24 @@ class Board:
 
         return True
 
-    def movePiece(self,move): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
+    def movePiece(self,move,real): #move is being passed in the format: ["color","type",row,column,rowTo,columnTo]
 
         #NOTE only call this function if you have already checked if the move is a legal move
 
         #first I am putting the code relevant to castling; NOTE: this function is not to be used for castling
+        if real:
+            if move[1] == "R":
+                if move[0] == "w":
+                    if [move[2],move[3]] in self.whiteCastleableSpots:
+                        self.whiteCastleableSpots.remove([move[2],move[3]])
+                    elif [move[2],move[3]] in self.blackCastleableSpots:
+                        self.blackCastleableSpots.remove([move[2],move[3]])
 
-        if move[1] == "R":
-            if move[0] == "w":
-                if [move[2],move[3]] in self.whiteCastleableSpots:
-                    self.whiteCastleableSpots.remove([move[2],move[3]])
-            elif [move[2],move[3]] in self.blackCastleableSpots:
-                self.blackCastleableSpots.remove([move[2],move[3]])
-
-        if move[1] == "K":
-            if move[0] == "w":
-                self.whiteCastleableSpots = []
-            else:
-                self.blackCastleableSpots = []
+            if move[1] == "K":
+                if move[0] == "w":
+                    self.whiteCastleableSpots = []
+                else:
+                    self.blackCastleableSpots = []
 
         self.gridCache.append([i[:] for i in self.grid])#because python takes over the control of pointers and such, this is the only way to make it not update with self.grid
 
@@ -801,6 +801,7 @@ class Board:
 
         if color == "w":
             if not ([move[1],move[2]] in self.whiteCastleableSpots):
+                print "can only castle at",self.whiteCastleableSpots
                 return False
         else:
             if not ([move[1],move[2]] in self.blackCastleableSpots):
@@ -862,7 +863,7 @@ class Board:
                 move = [colorsTurn]
                 move.extend(rawMove)
                 if self.isLegalMove(move,True):
-                    self.movePiece(move)
+                    self.movePiece(move,True)
                     invalidMove = False
 
             except: # not enough inputs or castle
@@ -948,7 +949,7 @@ class Game:
                 self.board.printGrid()
                 self.board.takePlayerMove(whoseTurn)
             else:
-                self.board.movePiece(self.bestMove(compColor))
+                self.board.movePiece(self.bestMove(compColor),True)
 
     def zeroPlayer(self):
         genSize = 3
@@ -1026,7 +1027,7 @@ class Game:
                 if goTo[0] == "K":#if the move would take the king
                     return ((1 if isComp else -1) * (100000/movesLeft))#this is just like checking for checkmates, but it is more efficient
 
-            self.board.movePiece(move)
+            self.board.movePiece(move,False)
 
             '''
             if isComp:
@@ -1062,7 +1063,7 @@ class Game:
                 self.board.undoMove()
                 return worst
         else:#this is now if there are no more moves to look into the future
-            self.board.movePiece(move)
+            self.board.movePiece(move,False)
             compColor = (move[0] if isComp else ("w" if move[0]=="b" else "b"))
             evaluation = self.evaluateBoard(compColor)
             self.board.undoMove()
