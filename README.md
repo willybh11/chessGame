@@ -1,6 +1,12 @@
-#To Play the Game:
+#To play the game on Windows or Mac:
 
 	run the chessLauncher.exe file
+
+	NOTE: running directly from the chessGame.py file only works on linux
+
+#To play the game on Linux:
+
+	cd into the gameFiles folder and type "python chessGame.py" in the terminal
 
 #you can:
 

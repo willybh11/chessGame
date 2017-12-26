@@ -5,6 +5,7 @@ import turtle
 import time
 import random
 from generationalLearn import *
+from sys import platform
 
 class Graphics:
 
@@ -897,6 +898,10 @@ class Board:
 class Game:
 
     def __init__(self,tuningValues,testing):
+
+        self.isLinux = ("linux" in platform) #if it is running on a linux platform then the user will be launching this directly without the executable
+
+
         self.lastTurnTime = 5
         self.futureTurns = 2
         self.board = Board()
@@ -962,7 +967,7 @@ class Game:
 
         #the following section of code was an after-thought. It will read from learnignResults.txt and take the tuning values reached from last time
 
-        with open("gameFiles/learningResults.txt","r") as f:
+        with open(("learningResults.txt" if self.isLinux else "gameFiles/learningResults.txt"),"r") as f:
             latest = f.read()
             if latest != "":#if we have values from previous attempts
                 aGen,bGen = latest.split("--")
@@ -981,7 +986,7 @@ class Game:
         for generation in range(generations):
             print "\n\n==========WE ARE ENTERING GENERATION %d==========\n\n" %(generation)
 
-            with open("gameFiles/learningResults.txt","w") as f:
+            with open(("learningResults.txt" if self.isLinux else "gameFiles/learningResults.txt"),"w") as f:
                 f.truncate()
                 f.write(str(chessPlayerA)+"--"+str(chessPlayerB))
 
@@ -1006,7 +1011,7 @@ class Game:
 
             chessPlayerA.breedGen(aBest)
             chessPlayerB.breedGen(bBest)
-            with open("gameFiles/learningResults.txt","w") as f:
+            with open(("learningResults.txt" if self.isLinux else "gameFiles/learningResults.txt"),"w") as f:
                 f.truncate()
                 f.write(str(chessPlayerA)+"\n--\n\n"+str(chessPlayerB))
         print "\nthe values for player A are:",chessPlayerA.currentGeneration
@@ -1146,7 +1151,7 @@ class Game:
 
 if __name__ == "__main__":
     #order is: Pawn, Queen, Bishop, King, Rook, Knight
-    with open("gameFiles/learningResults.txt","r") as f:
+    with open(("learningResults.txt" if ("linux" in platform) else "gameFiles/learningResults.txt"),"r") as f:
         firstLine = f.readline()
         if firstLine == "":
             game = Game([1,10,4,1000,5,3,300,0.1,0.3,-1,0.3,0.5],False)#creates a Game class with some generic values
