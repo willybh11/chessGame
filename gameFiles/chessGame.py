@@ -1139,7 +1139,7 @@ class Game:
             self.board.printGrid()
         best = [self.evaluateMove(possMoves[0],self.futureTurns,True),possMoves[0]]
         for move in possMoves:
-            if self.board.isLegalMove(move,False):
+            if self.board.isLegalMove(move,True):
                 curEval = self.evaluateMove(move,self.futureTurns,True)
                 if curEval > best[0]:
                     best = [curEval,move]
