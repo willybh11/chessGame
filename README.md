@@ -18,4 +18,6 @@
 
 	this file contains the information that the AI uses to play chess
 
-#this game was completed in the year 2037
+#this game is under GNU General Public License 3
+
+#this game was completed in the year 2037.
