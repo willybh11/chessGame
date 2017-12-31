@@ -128,7 +128,7 @@ class Graphics:
         self.window = turtle.Screen()
         self.window.clear()
         self.window.setup(724, 724)
-        self.window.bgpic("background.gif" if ("linux" in platform) else "gameFiles/background.gif")
+        self.window.bgpic("gameFiles/background.gif")
         self.window.tracer(0, 0)
         self.T = turtle.Turtle()
         self.T.speed(10)
@@ -522,7 +522,7 @@ class Board:
                 returnList.append(move[:])
             elif goTo[1]==("b" if move[0]=="w" else "w"):
                 returnList.append(move[:])
-                break#we can break in this case even though it is a legal move, because the following pieces will be blocked
+                break#we break in this case even though it is a legal move, because the following pieces will be blocked
             else:
                 break
 
@@ -544,7 +544,7 @@ class Board:
                 returnList.append(move[:])
             elif goTo[1]==("b" if move[0]=="w" else "w"):
                 returnList.append(move[:])
-                break#we can break in this case even though it is a legal move, because the following pieces will be blocked
+                break#we break in this case even though it is a legal move, because the following pieces will be blocked
             else:
                 break
 
@@ -602,7 +602,7 @@ class Board:
                     move = ["castle"]
                     move.extend(i)
                     if self.isLegalCastle(color,move):
-                        foundMoves.append(move)
+                        foundMoves.append(move[:])
 
         for row in range(8):
             for column in range(8):
@@ -910,9 +910,6 @@ class Game:
 
     def __init__(self,tuningValues,testing):
 
-        self.isLinux = ("linux" in platform) #if it is running on a linux platform then the user will be launching this directly without the executable
-
-
         self.lastTurnTime = 5
         self.futureTurns = 2
         self.board = Board()
@@ -978,7 +975,7 @@ class Game:
 
         #the following section of code was an after-thought. It will read from learnignResults.txt and take the tuning values reached from last time
 
-        with open(("learningResults.txt" if self.isLinux else "gameFiles/learningResults.txt"),"r") as f:
+        with open("gameFiles/learningResults.txt","r") as f:
             latest = f.read()
             if latest != "":#if we have values from previous attempts
                 aGen,bGen = latest.split("--")
@@ -997,7 +994,7 @@ class Game:
         for generation in range(generations):
             print "\n\n==========WE ARE ENTERING GENERATION %d==========\n\n" %(generation)
 
-            with open(("learningResults.txt" if self.isLinux else "gameFiles/learningResults.txt"),"w") as f:
+            with open("gameFiles/learningResults.txt","w") as f:
                 f.truncate()
                 f.write(str(chessPlayerA)+"--"+str(chessPlayerB))
 
@@ -1022,14 +1019,13 @@ class Game:
 
             chessPlayerA.breedGen(aBest)
             chessPlayerB.breedGen(bBest)
-            with open(("learningResults.txt" if self.isLinux else "gameFiles/learningResults.txt"),"w") as f:
+            with open("gameFiles/learningResults.txt","w") as f:
                 f.truncate()
                 f.write(str(chessPlayerA)+"\n--\n\n"+str(chessPlayerB))
         print "\nthe values for player A are:",chessPlayerA.currentGeneration
         print "\nthe values for player B are:",chessPlayerB.currentGeneration
 
     def evaluateMove(self,move,movesLeft,isComp):
-
         #all that is done in this function is call itself recursively and take the worst or best case depending on if it is the computer's turn or the player's turn
         compColor = (move[0] if isComp else ("b" if move[0]=="w" else "w"))
         if movesLeft > 0:
@@ -1083,12 +1079,13 @@ class Game:
             return evaluation
 
     def evaluateBoard(self,forColor):#evaluates the worth of the board for a given color
-'''
+
+        '''
         if self.board.isCheckmate("w" if forColor=="b" else "b"):
             return  100000/self.futureTurns
         elif self.board.isCheckmate(forColor):
             return -100000/self.futureTurns
-'''
+        '''
         value = 0
 
         #adds up the values for each of the pieces
@@ -1142,12 +1139,13 @@ class Game:
             self.board.printGrid()
         best = [self.evaluateMove(possMoves[0],self.futureTurns,True),possMoves[0]]
         for move in possMoves:
-            curEval = self.evaluateMove(move,self.futureTurns,True)
-            if curEval > best[0]:
-                best = [curEval,move]
-            elif (abs(curEval - best[0]) < 5):
-                if random.choice([1,0]):
+            if self.board.isLegalMove(move,False):
+                curEval = self.evaluateMove(move,self.futureTurns,True)
+                if curEval > best[0]:
                     best = [curEval,move]
+                elif (abs(curEval - best[0]) < 5):
+                    if random.choice([1,0]):
+                        best = [curEval,move]
 
         #the following chunk of code is for determining how far into the future it should look
         if time.clock()-start < 0.4:
@@ -1166,7 +1164,7 @@ class Game:
 
 if __name__ == "__main__":
     #order is: Pawn, Queen, Bishop, King, Rook, Knight
-    with open(("learningResults.txt" if ("linux" in platform) else "gameFiles/learningResults.txt"),"r") as f:
+    with open("gameFiles/learningResults.txt","r") as f:
         firstLine = f.readline()
         if firstLine == "":
             game = Game([1,10,4,1000,5,3,300,0.1,0.3,-1,0.3,0.5],False)#creates a Game class with some generic values
