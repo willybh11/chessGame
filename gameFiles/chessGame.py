@@ -1138,6 +1138,12 @@ class Game:
             print "no possible moves"
             self.board.printGrid()
         best = [self.evaluateMove(possMoves[0],self.futureTurns,True),possMoves[0]]
+
+        #this next section is for tracking how far it is
+        incrementorPercent = 1.0/len(possMoves)
+        percentFinished = 0
+
+        #now we actually check the moves
         for move in possMoves:
             if self.board.isLegalMove(move,True):
                 curEval = self.evaluateMove(move,self.futureTurns,True)
@@ -1146,6 +1152,8 @@ class Game:
                 elif (abs(curEval - best[0]) < 5):
                     if random.choice([1,0]):
                         best = [curEval,move]
+            percentFinished += incrementorPercent * 100.0
+            print percentFinished,"% finished"
 
         #the following chunk of code is for determining how far into the future it should look
         if time.clock()-start < 0.4:
