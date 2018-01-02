@@ -906,6 +906,22 @@ class Board:
                     printRow = printRow + " - "
             print printRow
 
+    def __str__(self):
+        string = "   0  1  2  3  4  5  6  7\n"
+
+        for i in range(8)[::-1]:
+            row = self.grid[i]
+            thisRow = str(i)+" "
+            for square in row:
+                if len(square)>1:
+                    thisRow = thisRow + square + " "
+                else:
+                    thisRow = thisRow + " - "
+            thisRow += "\n"
+            string += thisRow
+
+        return string
+
 class Game:
 
     def __init__(self,tuningValues,testing):
