@@ -1,3 +1,8 @@
+/*  worked on by Leo Kastenberg
+ *  Java seems like a cool language
+ *  I am worried for when I have to actually weave this into the python and C code
+ */
+
 import javax.swing.*;
 import java.awt.Graphics;
 import java.awt.Color;
@@ -37,7 +42,7 @@ public class JavaGraphics extends JFrame
       } catch(IOException e) { e.printStackTrace(); }
    }
 
-   public static void main(String args[]) {
+   public static void main(String[] args) {
         JavaGraphics board = new JavaGraphics();
         board.setTitle("ChessBoard");
         board.setSize(800, 800);
