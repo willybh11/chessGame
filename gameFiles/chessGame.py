@@ -217,7 +217,7 @@ class Board:
         if not self.isCheck(whoseTurn):
             return False
 
-        posMoves = self.possibleColorMoves(whoseTurn,True)
+        hasPosMoves = self.hasPossibleColorMoves(whoseTurn)
 
         '''for move in posMoves:
             self.movePiece(move)
@@ -228,11 +228,10 @@ class Board:
                 return False
             self.undoMove()
         '''
-        if (len(posMoves)==0):
-            return True
-        else:
-            #print "\nCHECK\n"
+        if hasPosMoves:
             return False
+        else:
+            return True
 
     def tilesThreatened(self,whoseTurn):
         posMoves = self.possibleColorMoves(("w" if whoseTurn == "b" else "b"),False)
@@ -261,18 +260,266 @@ class Board:
     def isStalemate(self,whoseTurn):
         if len(self.gridCache)<10:
             return False
-        if (self.gridCache[-1]==self.gridCache[-5] and self.gridCache[-5]==self.gridCache[-9]):
+        if self.grid in self.gridCache:
             print "\n\nSTALEMATE!!\n\n"
             return True
 
-        possMoves = self.possibleColorMoves(whoseTurn,True)
+        if len(self.gridCache) > 20:
+            self.gridCache.pop(0)
+
+        possMoves = self.hasPossibleColorMoves(whoseTurn)
         for row in range(8):
             for col in range(8):
                 if self.grid[row][col] == "K"+whoseTurn:
                     kingCoords = [row,col]
                     break
-        if (not (kingCoords in self.tilesThreatened(whoseTurn))) and len(possMoves)==0:#if the king isn't threatened, but there are no possible moves, then it is stalemate
+        if (not (kingCoords in self.tilesThreatened(whoseTurn))) and (not self.hasPossibleColorMoves(whoseTurn)):#if the king isn't threatened, but there are no possible moves, then it is stalemate
             return True
+
+        return False
+
+    def hasPossibleColorMoves(self,color):#determines if a color can make any moves
+
+        for row in range(8):
+            for col in range(8):
+                if self.grid[row][col] != "":
+                    if self.grid[row][col][1]==color:
+                        if self.hasPossiblePieceMoves(row,col):
+                            return True
+        return False
+
+    def hasPossiblePieceMoves(self,row,col):
+        pieceType = self.grid[row][col][0]
+        return {"R":self.hasPossibleRookMoves(row,col),
+                "B":self.hasPossibleBishopMoves(row,col),
+                "K":self.hasPossibleKingMoves(row,col),
+                "P":self.hasPossiblePawnMoves(row,col),
+                "Q":(self.hasPossibleBishopMoves(row,col) or self.hasPossibleRookMoves(row,col)),
+                "N":self.hasPossibleKnightMoves(row,col)}
+
+    def hasPossibleRookMoves(self,row,col):
+        piece = self.grid[row][col]
+
+        for i in range(row+1,8):#up
+            move = [piece[1],piece[0],row,col,i,col]
+
+            '''if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
+                break
+            pieceType = move[1]'''
+            self.movePiece(move,False)
+            if self.isCheck(move[0]):
+                self.undoMove()
+                continue
+            self.undoMove()
+
+            goTo = self.grid[move[4]][move[5]]
+            if goTo =="":
+                return True
+            elif goTo[1]==("b" if move[0]=="w" else "w"):
+                return True
+                break#we can break in this case even though it is a legal move, because the following pieces will be blocked
+            else:
+                break
+
+        for i in range(row)[::-1]:#down
+            move = [piece[1],piece[0],row,col,i,col]
+
+            '''if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
+                break
+            pieceType = move[1]'''
+            self.movePiece(move,False)
+            if self.isCheck(move[0]):
+                self.undoMove()
+                continue
+            self.undoMove()
+
+            goTo = self.grid[move[4]][move[5]]
+            if goTo =="":
+                return True
+            elif goTo[1]==("b" if move[0]=="w" else "w"):
+                return True
+                break#we can break in this case even though it is a legal move, because the following pieces will be blocked
+            else:
+                break
+
+        for i in range(col+1,8):#right
+            move = [piece[1],piece[0],row,col,row,i]
+
+            '''if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
+                break
+            pieceType = move[1]'''
+            self.movePiece(move,False)
+            if self.isCheck(move[0]):
+                self.undoMove()
+                continue
+            self.undoMove()
+
+            goTo = self.grid[move[4]][move[5]]
+            if goTo =="":
+                return True
+            elif goTo[1]==("b" if move[0]=="w" else "w"):
+                return True
+                break#we break in this case even though it is a legal move, because the following pieces will be blocked
+            else:
+                break
+
+        for i in range(col)[::-1]:#left
+            move = [piece[1],piece[0],row,col,row,i]
+
+            '''if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
+                break
+            pieceType = move[1]'''
+            self.movePiece(move,False)
+            if self.isCheck(move[0]):
+                self.undoMove()
+                continue
+            self.undoMove()
+
+            goTo = self.grid[move[4]][move[5]]
+            if goTo =="":
+                return True
+            elif goTo[1]==("b" if move[0]=="w" else "w"):
+                return True
+
+                break#we break in this case even though it is a legal move, because the following pieces will be blocked
+            else:
+                break
+
+        return False
+
+    def hasPossibleBishopMoves(self,row,col):
+        piece = self.grid[row][col]
+
+        for i in range(1,row+1):#down and to the right
+            move = [piece[1],piece[0],row,col,row-i,col+i]
+
+            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:#this chunk is the code taken from the start of isLegalMove
+                break
+            pieceType = move[1]
+            self.movePiece(move,False)
+            if self.isCheck(move[0]):
+                self.undoMove()
+                continue
+            self.undoMove()
+
+            goTo = self.grid[move[4]][move[5]]
+            if goTo =="":
+                return True
+            elif goTo[1]==("b" if move[0]=="w" else "w"):
+                return True
+                break#we can break in this case even though it is a legal move, because the following pieces will be blocked
+            else:
+                break
+
+        for i in range(1,8-row):#up and to the right
+            move = [piece[1],piece[0],row,col,row+i,col+i]
+
+            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:#this chunk is the code taken from the start of isLegalMove
+                break
+            pieceType = move[1]
+            self.movePiece(move,False)
+            if self.isCheck(move[0]):
+                self.undoMove()
+                continue
+            self.undoMove()
+
+            goTo = self.grid[move[4]][move[5]]
+            if goTo =="":
+                return True
+            elif goTo[1]==("b" if move[0]=="w" else "w"):
+                return True
+                break#we can break in this case even though it is a legal move, because the following pieces will be blocked
+            else:
+                break
+
+        for i in range(1,row+1):#down and to the left
+            move = [piece[1],piece[0],row,col,row-i,col-i]
+
+            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:#this chunk is the code taken from the start of isLegalMove
+                break
+            pieceType = move[1]
+            self.movePiece(move,False)
+            if self.isCheck(move[0]):
+                self.undoMove()
+                continue
+            self.undoMove()
+
+            goTo = self.grid[move[4]][move[5]]
+            if goTo =="":
+                return True
+            elif goTo[1]==("b" if move[0]=="w" else "w"):
+                return True
+                break#we can break in this case even though it is a legal move, because the following pieces will be blocked
+            else:
+                break
+
+        for i in range(1,8-row):#up and to the left
+            move = [piece[1],piece[0],row,col,row+i,col-i]
+
+            if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[5] < 0:#this chunk is the code taken from the start of isLegalMove
+                break
+            pieceType = move[1]
+            self.movePiece(move,False)
+            if self.isCheck(move[0]):
+                self.undoMove()
+                continue
+            self.undoMove()
+
+            goTo = self.grid[move[4]][move[5]]
+            if goTo =="":
+                return True
+            elif goTo[1]==("b" if move[0]=="w" else "w"):
+                return True
+                break#we can break in this case even though it is a legal move, because the following pieces will be blocked
+            else:
+                break
+
+        return False
+
+    def hasPossibleKingMoves(self,row,col):
+        pieceType = self.grid[row][col][0]
+        pieceColor = self.grid[row][col][1]
+        for rowTo in range(row-1,row+2):
+            for colTo in range(col-1,col+2):
+                if self.isLegalMove([pieceColor,pieceType,row,col,rowTo,colTo],True):
+                    return True
+        return False
+
+    def hasPossiblePawnMoves(self,row,col):
+        piece = self.grid[row][col]
+        for a in range(row-2,row+3):
+            for b in range(col-1,col+2):
+                move = [piece[1],piece[0],row,col,a,b]
+                if self.isLegalMove(move,True):
+                    return True
+        return False
+
+    def hasPossibleKnightMoves(self,row,col):
+        piece = self.grid[row][col]
+
+        move = [piece[1],piece[0],row,col,row+1,col+2]
+        if self.isLegalMove(move,True): return True
+
+        move = [piece[1],piece[0],row,col,row-1,col+2]
+        if self.isLegalMove(move,True): return True
+
+        move = [piece[1],piece[0],row,col,row+1,col-2]
+        if self.isLegalMove(move,True): return True
+
+        move = [piece[1],piece[0],row,col,row-1,col-2]
+        if self.isLegalMove(move,True): return True
+
+        move = [piece[1],piece[0],row,col,row+2,col+1]
+        if self.isLegalMove(move,True): return True
+
+        move = [piece[1],piece[0],row,col,row+2,col-1]
+        if self.isLegalMove(move,True): return True
+
+        move = [piece[1],piece[0],row,col,row-2,col+1]
+        if self.isLegalMove(move,True): return True
+
+        move = [piece[1],piece[0],row,col,row-2,col-1]
+        if self.isLegalMove(move,True): return True
 
         return False
 
@@ -1058,19 +1305,25 @@ class Game:
                     self.board.undoMove()
                     return -100000  # it just makes it go like: "stop doing that"'''
             color = ("b" if move[0] == "w" else "w")
-            if self.board.isStalemate(color):
-                return 0#the value of a stalemate is 0. This way the AI will want a stalemate if it is behind in pieces and it will avoid one if it is ahead
             possMoves = self.board.possibleColorMoves(color,False)
-            '''
+
             if isComp:
-                if len(possMoves)==0:#this is the same, just faster, as calling isCheckmate
-                    self.board.undoMove()
-                    return 100000/movesLeft
+                if len(possMoves)==0:
+                    if self.board.isCheck(color):
+                        self.board.undoMove()
+                        return 100000/movesLeft#this makes it a checkmate
+                    else:
+                        self.board.undoMove()
+                        return 0
             else:
                 if len(possMoves)==0:
-                    self.board.undoMove()
-                    return -100000/movesLeft
-            '''
+                    if self.board.isCheck():
+                        self.board.undoMove()
+                        return -100000/movesLeft
+                    else:
+                        self.baord.undoMove()
+                        return 0
+
             if not isComp:
 
                 best = self.evaluateMove(possMoves[0],movesLeft-1,(not isComp))
