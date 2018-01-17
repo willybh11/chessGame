@@ -1125,15 +1125,17 @@ class Board:
                     invalidMove = False
 
             except: # not enough inputs or castle
-
-                if inputMove[0].lower() == "castle":#castles are in the format ["castle",withRookRow,withRookCol]
-                    rawMove = ["castle", int(inputMove[2]) - 1, self.letterConvert[inputMove[1].upper()]]
-                    #rawMove[1],rawMove[2] = int(rawMove[1]),int(rawMove[2])
-                    if self.isLegalCastle(colorsTurn,rawMove):
-                        self.castleMove(rawMove)
-                        invalidMove = False
-                else:
-                    print "invalid num of inputs"
+                try:
+                    if inputMove[0].lower() == "castle":#castles are in the format ["castle",withRookRow,withRookCol]
+                        rawMove = ["castle", int(inputMove[2]) - 1, self.letterConvert[inputMove[1].upper()]]
+                        #rawMove[1],rawMove[2] = int(rawMove[1]),int(rawMove[2])
+                        if self.isLegalCastle(colorsTurn,rawMove):
+                            self.castleMove(rawMove)
+                            invalidMove = False
+                    else:
+                        print "invalid num of inputs"
+                except:
+                    pass
 
             if invalidMove:
                 print "that move was not a legal move, please check how you formated it"
@@ -1211,16 +1213,25 @@ class Game:
         playerColor = raw_input("\nwhat color do you want to play as?\n>>>")
         compColor = ("b" if playerColor == "w" else "w")
 
-        whoseTurn = "b"#start as black because it switches colors at the start of the loop
+        whoseTurn = "w"#start as black because it switches colors at the start of the loop
 
         while not (self.board.isCheckmate(whoseTurn) or self.board.isStalemate(whoseTurn)):
-            whoseTurn = ("b" if whoseTurn == "w" else "w")
             self.graphics.turtleUpdate(self.board.grid)
+            if self.board.isCheck(whoseTurn):
+                print "\n\nCHECK\n\n"
+                if whoseTurn == playerColor:
+                    print "one possible move is",self.board.possibleColorMoves(whoseTurn,True)[0]
             if whoseTurn == playerColor:
                 self.board.printGrid()
                 self.board.takePlayerMove(whoseTurn)
             else:
                 self.board.movePiece(self.bestMove(compColor),True)
+            whoseTurn = ("b" if whoseTurn == "w" else "w")
+
+        if self.board.isCheckmate(whoseTurn):
+            print "checkmate"
+        else:
+            print "stalemate"
 
     def zeroPlayer(self):
         genSize = 3
@@ -1402,7 +1413,7 @@ class Game:
     def bestMove(self,color):#compTurn is boolean for if it is the computer's turn
 
         start = time.clock()
-        possMoves = self.board.possibleColorMoves(color,False)
+        possMoves = self.board.possibleColorMoves(color,True)
         if len(possMoves)==0:
             print "no possible moves"
             self.board.printGrid()
@@ -1414,7 +1425,7 @@ class Game:
 
         #now we actually check the moves
         for move in possMoves:
-            if self.board.isLegalMove(move,True):
+            if self.board.isLegalMove(move,True):#just be absolutely sure
                 curEval = self.evaluateMove(move,self.futureTurns,True)
                 if curEval > best[0]:
                     best = [curEval,move]
