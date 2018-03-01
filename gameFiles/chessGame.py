@@ -1191,12 +1191,14 @@ class Game:
 
         self.graphics.turtleUpdate(self.board.grid)
 
+        print "\nMoves go like this: row, column, target row, target column, t .\nThe 't' is optional: if included the move is displayed in the terminal.\nIt is not case sensitive.\n\nex. A 2 A 4 t\nex. b 7 B 6"
+
+
         if testing:
             pass
         else:
-           self.playGame[input("How many players? ")]()
+           self.playGame[input("\nHow many players? ")]()
 
-        print "Moves go like this: row, column, target row, target column, t .\nThe 't' is optional, if included the move is displayed in the terminal.\nIt is not case sensitive.\nex. A 2 A 4 t\nex. b 7 B 6"
 
 
 
