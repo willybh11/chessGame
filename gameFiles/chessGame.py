@@ -1070,14 +1070,14 @@ class Board:
         row = (0 if color=="w" else 7)#the row that this will be happening on
 
         if move[2] == 0:#if it is the left rook
-            for col in range(1,5):
+            for col in range(1,4):
                 if not (self.grid[row][col] == ""):
-                    print "in the way"
+                    #print "in the way"
                     return False
         else:
             for col in range(5,7):
                 if not (self.grid[row][col] == ""):
-                    print "in the way"
+                    #print "in the way"
                     return False
 
         return True
