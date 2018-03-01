@@ -17,6 +17,6 @@
 
 ### learningResults.txt contains the information that the AI uses to play chess.
 
-### this game is under GNU General Public License 3.
+### This game is under GNU General Public License 3.
 
-### this game was completed in the year 2037.
+### This game was completed in the year 2037.
