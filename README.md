@@ -15,10 +15,8 @@
 
 	-Play 0 player and watch the AI play itself
 
-### note on learningResults.txt
+### learningResults.txt contains the information that the AI uses to play chess.
 
-	This file contains the information that the AI uses to play chess
-
-### this game is under GNU General Public License 3
+### this game is under GNU General Public License 3.
 
 ### this game was completed in the year 2037.
