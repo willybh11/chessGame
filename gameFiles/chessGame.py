@@ -175,6 +175,8 @@ class Board:
                                 "G":6,
                                 "H":7}
 
+        self.colorConvert = {'b': "BLACK", 'w': "WHITE"}
+
         self.whiteCastleableSpots = [[0,0],[0,7]]
         self.blackCastleableSpots = [[7,0],[7,7]]
 
@@ -1102,9 +1104,10 @@ class Board:
     def takePlayerMove(self,colorsTurn):    # i changed this
         invalidMove = True
         while invalidMove: #because python doesn't have any heckin' do while loops
-            print "it is "+colorsTurn+"'s turn\n"
+            #print "it is %s's turn\n" %(self.colorConvert[colorsTurn])
 
-            inputMove = raw_input("input move in the format:\n'column' row 'columnTo' rowTo\ne.g. A 2 A 4\n>>>").split() #currently in the format [row,column,rowTo,columnTo]
+            #inputMove = raw_input("input move in the format:\n'column' row 'columnTo' rowTo\ne.g. A 2 A 4\n>>>").split() #currently in the format [row,column,rowTo,columnTo]
+            inputMove = raw_input(self.colorConvert[colorsTurn]+": >>>").split()
 
             try:
                 row = int(inputMove[1]) - 1
@@ -1139,6 +1142,8 @@ class Board:
 
             if invalidMove:
                 print "that move was not a legal move, please check how you formated it"
+            if inputMove[-1].lower() == 't': #user chose to show move in terminal
+                self.printGrid()
 
     def printGrid(self):
 
@@ -1191,11 +1196,15 @@ class Game:
         else:
            self.playGame[input("How many players? ")]()
 
+        print "Moves go like this: row, column, target row, target column, t .\nThe 't' is optional, if included the move is displayed in the terminal.\nIt is not case sensitive.\nex. A 2 A 4 t\nex. b 7 B 6"
+
+
+
     def twoPlayer(self):
         whoseTurn = "w"
         while not (self.board.isCheckmate(whoseTurn) or self.board.isStalemate(whoseTurn)):
             self.graphics.turtleUpdate(self.board.grid)
-            self.board.printGrid()
+            #self.board.printGrid()
             while 1:
                 try:
                     self.board.takePlayerMove(whoseTurn)
@@ -1206,7 +1215,7 @@ class Game:
             whoseTurn = ("w" if whoseTurn == "b" else "b")
 
 
-        self.board.printGrid()
+        #self.board.printGrid()
         print ("checkmate" if self.board.isCheckmate(whoseTurn) else "stalemate")
 
     def singlePlayer(self):
@@ -1222,7 +1231,7 @@ class Game:
                 if whoseTurn == playerColor:
                     print "one possible move is",self.board.possibleColorMoves(whoseTurn,True)[0]
             if whoseTurn == playerColor:
-                self.board.printGrid()
+                #self.board.printGrid()
                 self.board.takePlayerMove(whoseTurn)
             else:
                 self.board.movePiece(self.bestMove(compColor),True)
@@ -1416,7 +1425,7 @@ class Game:
         possMoves = self.board.possibleColorMoves(color,True)
         if len(possMoves)==0:
             print "no possible moves"
-            self.board.printGrid()
+            #self.board.printGrid()
         best = [self.evaluateMove(possMoves[0],self.futureTurns,True),possMoves[0]]
 
         #this next section is for tracking how far it is
