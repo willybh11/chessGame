@@ -1199,9 +1199,6 @@ class Game:
         else:
            self.playGame[input("\nHow many players? ")]()
 
-
-
-
     def twoPlayer(self):
         whoseTurn = "w"
         while not (self.board.isCheckmate(whoseTurn) or self.board.isStalemate(whoseTurn)):
