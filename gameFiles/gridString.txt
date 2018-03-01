@@ -1,9 +1,0 @@
-0  1  2  3  4  5  6  7
-7 Rb Nb Bb Qb Kb Bb Nb Rb
-6 Pb Pb Pb Pb Pb Pb Pb Pb
-5  -  -  -  -  -  -  -  -
-4  -  -  -  -  -  -  -  -
-3  -  -  -  -  -  -  -  -
-2  -  -  -  -  -  -  -  -
-1 Pw Pw Pw Pw Pw Pw Pw Pw
-0 Rw Nw Bw Qw Kw Bw Nw Rw
