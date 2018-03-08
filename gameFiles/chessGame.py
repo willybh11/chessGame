@@ -1195,23 +1195,29 @@ class Game:
         self.lastTurnTime = 5
         self.futureTurns = 2
         self.board = Board()
-        self.graphics = Graphics()
-        self.graphics.turtleSetup()
+
         self.pieceValues = [int(tuningValues[i]) for i in range(6)]
         self.movementCoefficients = [int(tuningValues[i]) for i in range(6,12)]
         self.playGame = [self.zeroPlayer, self.singlePlayer, self.twoPlayer]
 
-        self.graphics.turtleUpdate(self.board.grid)
 
-        print "\nMoves go like this: row, column, target row, target column, t .\nThe 't' is optional: if included the move is displayed in the terminal.\nIt is not case sensitive.\n\nex. A 2 A 4 t\nex. b 7 B 6"
 
 
         if testing:
-            pass
+            self.graphicsSetup()
+            #pass
         else:
-           self.playGame[input("\nHow many players? ")]()
+            print "\nMoves go like this: row, column, target row, target column, t .\nThe 't' is optional: if included the move is displayed in the terminal.\nIt is not case sensitive.\n\nex. A 2 A 4 t\nex. b 7 B 6"
+            self.playGame[input("\nHow many players? ")]()
+
+    def graphicsSetup(self):
+        self.graphics = Graphics()
+        self.graphics.turtleSetup()
+        self.graphics.turtleUpdate(self.board.grid)
+
 
     def twoPlayer(self):
+        self.graphicsSetup()
         whoseTurn = "w"
         while not (self.board.isCheckmate(whoseTurn) or self.board.isStalemate(whoseTurn)):
             self.graphics.turtleUpdate(self.board.grid)
@@ -1231,6 +1237,8 @@ class Game:
 
     def singlePlayer(self):
         playerColor = raw_input("\nwhat color do you want to play as?\n>>>")
+        self.graphicsSetup()
+
         compColor = ("b" if playerColor == "w" else "w")
 
         whoseTurn = "w"#start as black because it switches colors at the start of the loop
@@ -1245,7 +1253,10 @@ class Game:
                 #self.board.printGrid()
                 self.board.takePlayerMove(whoseTurn)
             else:
-                self.board.movePiece(self.bestMove(compColor),True)
+                moveWereGonnaDo = self.bestMove(compColor)
+                if moveWereGonnaDo == None:
+                    break
+                self.board.movePiece(moveWereGonnaDo,True)
             whoseTurn = ("b" if whoseTurn == "w" else "w")
 
         if self.board.isCheckmate(whoseTurn):
@@ -1254,6 +1265,7 @@ class Game:
             print "stalemate"
 
     def zeroPlayer(self):
+        self.graphicsSetup()
         genSize = 3
         randomness = 50
         aValues = [400]
@@ -1436,7 +1448,7 @@ class Game:
         possMoves = self.board.possibleColorMoves(color,True)
         if len(possMoves)==0:
             print "no possible moves"
-            #self.board.printGrid()
+            return
         best = [self.evaluateMove(possMoves[0],self.futureTurns,True),possMoves[0]]
 
         #this next section is for tracking how far it is
@@ -1453,7 +1465,7 @@ class Game:
                     if random.choice([1,0]):
                         best = [curEval,move]
             percentFinished += incrementorPercent * 100.0
-            print percentFinished,"% finished"
+            print int(percentFinished),"%finished"
 
         #the following chunk of code is for determining how far into the future it should look
         if time.clock()-start < 0.4:
