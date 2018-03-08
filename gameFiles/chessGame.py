@@ -715,14 +715,17 @@ class Board:
             '''if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
                 break
             pieceType = move[1]'''
+            goTo = self.grid[move[4]][move[5]]
             if safeMode:
                 self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
-                    continue
+                    if goTo=="":
+                        continue
+                    else:
+                        break
                 self.undoMove()
 
-            goTo = self.grid[move[4]][move[5]]
             if goTo =="":
                 returnList.append(move[:])
             elif goTo[1]==("b" if move[0]=="w" else "w"):
@@ -737,14 +740,17 @@ class Board:
             '''if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
                 break
             pieceType = move[1]'''
+            goTo = self.grid[move[4]][move[5]]
             if safeMode:
                 self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
-                    continue
+                    if goTo=="":
+                        continue
+                    else:
+                        break
                 self.undoMove()
 
-            goTo = self.grid[move[4]][move[5]]
             if goTo =="":
                 returnList.append(move[:])
             elif goTo[1]==("b" if move[0]=="w" else "w"):
@@ -759,14 +765,17 @@ class Board:
             '''if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
                 break
             pieceType = move[1]'''
+            goTo = self.grid[move[4]][move[5]]
             if safeMode:
                 self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
-                    continue
+                    if goTo=="":
+                        continue
+                    else:
+                        break
                 self.undoMove()
 
-            goTo = self.grid[move[4]][move[5]]
             if goTo =="":
                 returnList.append(move[:])
             elif goTo[1]==("b" if move[0]=="w" else "w"):
@@ -781,14 +790,17 @@ class Board:
             '''if move[4] > 7 or move[4] < 0 or move[5] > 7 or move[4] < 0:#this chunk is the code taken from the start of isLegalMove
                 break
             pieceType = move[1]'''
+            goTo = self.grid[move[4]][move[5]]
             if safeMode:
                 self.movePiece(move,False)
                 if self.isCheck(move[0]):
                     self.undoMove()
-                    continue
+                    if goTo=="":
+                        continue
+                    else:
+                        break
                 self.undoMove()
 
-            goTo = self.grid[move[4]][move[5]]
             if goTo =="":
                 returnList.append(move[:])
             elif goTo[1]==("b" if move[0]=="w" else "w"):
