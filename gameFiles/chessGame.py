@@ -1063,6 +1063,7 @@ class Board:
         if (move[4] == (0 if move[0]=="b" else 7)) and move[1] == "P":
             self.grid[move[4]][move[5]] = "Q"+move[0]
 
+
     def isLegalCastle(self,color,move):#castles are in the format ["castle",withRookRow,withRookCol]
 
         #it is highly advised that you look at a chess board while reading this in order to understand it
@@ -1153,7 +1154,7 @@ class Board:
                     pass
 
             if invalidMove:
-                print "that move was not a legal move, please check how you formated it"
+                print "Invalid, illegal, or ill-formatted move."
             if inputMove[-1].lower() == 't': #user chose to show move in terminal
                 self.printGrid()
 
@@ -1200,9 +1201,6 @@ class Game:
         self.movementCoefficients = [int(tuningValues[i]) for i in range(6,12)]
         self.playGame = [self.zeroPlayer, self.singlePlayer, self.twoPlayer]
 
-
-
-
         if testing:
             self.graphicsSetup()
             #pass
@@ -1215,7 +1213,6 @@ class Game:
         self.graphics.turtleSetup()
         self.graphics.turtleUpdate(self.board.grid)
 
-
     def twoPlayer(self):
         self.graphicsSetup()
         whoseTurn = "w"
@@ -1227,7 +1224,7 @@ class Game:
                     self.board.takePlayerMove(whoseTurn)
                     break
                 except:
-                    print "format error: try again\n"
+                    print "Invalid, illegal, or ill-formatted move."
 
             whoseTurn = ("w" if whoseTurn == "b" else "b")
 
